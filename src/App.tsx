@@ -40,7 +40,11 @@ const App = () => {
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        isAdmin ? <AppStack /> : <ProfileScreen />
+        isAdmin ? (
+          <AppStack />
+        ) : (
+          <ProfileScreen />
+        )
       ) : (
         <AuthStack />
       )}
