@@ -3,20 +3,23 @@ import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Type
 
 const registerUser = async (request: UserRegistrationRequest): Promise<UserRegistrationResponse> => {
   try {
-    console.log('Calling registerUser API');
-    console.log('Request:', request);
+    // Log the registration request
+    console.log('Registering user:', request);
 
-    // Generate random data for response
-    const response: UserRegistrationResponse = {
-      success: true,
-      message: 'User registered successfully',
-    };
+    // Generate a random success status
+    const success = Math.random() < 0.5;
 
-    console.log('Response:', response);
-    return response;
+    // Generate a random message
+    const message = success ? 'User registration successful' : 'User registration failed';
+
+    // Return the response
+    return { success, message };
   } catch (error) {
-    console.error('Error in registerUser API:', error);
-    throw error;
+    // Log the error
+    console.error('Error registering user:', error);
+
+    // Return an error response
+    return { success: false, message: 'An error occurred during user registration' };
   }
 };
 
