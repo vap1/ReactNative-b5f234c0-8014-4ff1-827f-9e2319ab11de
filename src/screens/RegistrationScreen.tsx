@@ -25,7 +25,7 @@ const RegistrationScreen = () => {
       if (response.success) {
         console.log('Registration successful');
         // Automatically log in the user after successful registration
-        await loginUser(email, password);
+        await loginUser({ email, password });
       } else {
         console.log('Registration failed:', response.message);
       }
