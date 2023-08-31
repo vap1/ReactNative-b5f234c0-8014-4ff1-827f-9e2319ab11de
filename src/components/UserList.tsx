@@ -2,7 +2,7 @@
 import React, { useContext, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { AdminUserDetailsResponse, User } from '../types/Types';
+import { AdminUserDetailsResponse } from '../types/Types';
 import { getAdminUserDetails } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
@@ -12,8 +12,10 @@ const UserList: React.FC = () => {
     const fetchUserDetails = async () => {
       try {
         const response: AdminUserDetailsResponse = await getAdminUserDetails();
+        console.log('Admin User Details Response:', response);
         if (response.success) {
           setUsers(response.users);
+          console.log('Users:', response.users);
         } else {
           console.log('Failed to fetch user details:', response.message);
         }
@@ -28,7 +30,7 @@ const UserList: React.FC = () => {
   return (
     <View>
       <Text>User List:</Text>
-      {users.map((user: User) => (
+      {users.map((user) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
           <Text>Email: {user.email}</Text>
