@@ -1,31 +1,34 @@
 
 import { UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
 
-export const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
+const updateProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
   try {
-    // Log the update user profile request
-    console.log('Update user profile request:', request);
+    // Log the request details
+    console.log('Updating user profile...');
+    console.log('Request:', request);
 
-    // Generate a random success status
-    const success = Math.random() < 0.5;
-
-    // Generate a random message
-    const message = success ? 'User profile update successful' : 'User profile update failed';
-
-    // Create a random response
+    // Generate random data for the response
     const response: UserProfileUpdateResponse = {
-      success,
-      message,
+      success: true,
+      message: 'User profile updated successfully.',
     };
 
-    // Log the update user profile response
-    console.log('Update user profile response:', response);
+    // Log the response details
+    console.log('Response:', response);
 
     return response;
   } catch (error) {
-    // Log any errors that occur during update user profile
-    console.error('Update user profile error:', error);
+    // Handle any errors
+    console.error('Error updating user profile:', error);
 
-    throw error;
+    // Generate error response
+    const response: UserProfileUpdateResponse = {
+      success: false,
+      message: 'Failed to update user profile.',
+    };
+
+    return response;
   }
 };
+
+export default updateProfile;
