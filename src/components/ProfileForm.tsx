@@ -1,66 +1,55 @@
 
-import React, { useContext, useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
-import { updateUserProfile, UserProfileUpdateRequest } from '../apis/ProfileUpdateApi';
-import { UserContext } from '../contexts/UserContext';
-import { User } from '../types/Types';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, Button } from 'react-native';
+import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { UserContext, UserContextProps } from '../contexts/UserContext';
+import { UserProfileResponse } from '../types/Types';
 
 const ProfileForm: React.FC = () => {
-  const { user, setUser } = useContext(UserContext);
-  const [name, setName] = useState<string>(user.name);
-  const [contactInfo, setContactInfo] = useState<string>(user.contactInfo);
-  const [address, setAddress] = useState<string>(user.address);
+  const { user, setUser } = useContext<UserContextProps>(UserContext);
+  const [name, setName] = useState<string>(user?.name || '');
+  const [contactInfo, setContactInfo] = useState<string>(user?.contactInfo || '');
+  const [address, setAddress] = useState<string>(user?.address || '');
 
   const handleSaveChanges = async () => {
     try {
-      // Prepare the request payload
-      const request: UserProfileUpdateRequest = {
-        token: user.token,
+      // Log: Saving profile changes
+      console.log('Saving profile changes');
+
+      const updatedProfile = await updateUserProfile({
+        token: user?.token || '',
         name,
         contactInfo,
         address,
-      };
+      });
 
-      // Make the API call to update the user profile
-      const response = await updateUserProfile(request);
+      if (updatedProfile.success) {
+        // Log: Profile changes saved successfully
+        console.log('Profile changes saved successfully');
 
-      if (response.success) {
         // Update the user context with the updated profile
-        const updatedUser: User = {
-          ...user,
-          name,
-          contactInfo,
-          address,
-        };
-        setUser(updatedUser);
-
-        Alert.alert('Success', response.message);
+        setUser(updatedProfile.user);
       } else {
-        Alert.alert('Error', response.message);
+        // Log: Failed to save profile changes
+        console.log('Failed to save profile changes');
       }
     } catch (error) {
-      console.error('Error updating user profile:', error);
-      Alert.alert('Error', 'Failed to update user profile. Please try again later.');
+      // Log: Error while saving profile changes
+      console.error('Error while saving profile changes:', error);
     }
   };
 
   return (
     <View>
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        placeholder="Name"
-      />
-      <TextInput
-        value={contactInfo}
-        onChangeText={setContactInfo}
-        placeholder="Contact Info"
-      />
-      <TextInput
-        value={address}
-        onChangeText={setAddress}
-        placeholder="Address"
-      />
+      <Text>Name:</Text>
+      <TextInput value={name} onChangeText={setName} />
+
+      <Text>Contact Info:</Text>
+      <TextInput value={contactInfo} onChangeText={setContactInfo} />
+
+      <Text>Address:</Text>
+      <TextInput value={address} onChangeText={setAddress} />
+
       <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
