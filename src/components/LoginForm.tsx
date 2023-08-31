@@ -1,21 +1,16 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
-
+import { Text, TextInput, Button } from 'react-native';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuthContext } from '../contexts/AuthContext';
 
-const LoginForm: React.FC = () => {
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const { setToken } = React.useContext(AuthContext);
+  const { setToken } = useAuthContext();
 
   const handleLogin = async () => {
     console.log('Logging in...');
-    setError('');
-
     try {
       const request: UserLoginRequest = {
         email,
@@ -27,19 +22,17 @@ const LoginForm: React.FC = () => {
 
       if (response.success) {
         setToken(response.token);
-        console.log('Login successful!');
+        console.log('Login successful');
       } else {
-        setError(response.message);
         console.log('Login failed:', response.message);
       }
     } catch (error) {
-      setError('An error occurred during login.');
-      console.error('Login error:', error);
+      console.log('Login error:', error);
     }
   };
 
   return (
-    <View>
+    <>
       <Text>Login</Text>
       <TextInput
         placeholder="Email"
@@ -53,8 +46,7 @@ const LoginForm: React.FC = () => {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
-      {error ? <Text>{error}</Text> : null}
-    </View>
+    </>
   );
 };
 
