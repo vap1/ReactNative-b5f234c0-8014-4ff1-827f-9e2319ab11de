@@ -6,18 +6,18 @@ import { getUsers, UserContextProps } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
   const { users, getUsers } = useContext<UserContextProps>(UserContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      setIsLoading(true);
       try {
+        setLoading(true);
         const response = await getUsers();
         console.log('User List API Response:', response);
       } catch (error) {
         console.error('Error fetching user list:', error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -26,12 +26,12 @@ const UserList: React.FC = () => {
 
   return (
     <View>
-      {isLoading ? (
+      {loading ? (
         <Text>Loading...</Text>
       ) : (
         <FlatList
           data={users}
-          keyExtractor={(item: User) => item.email}
+          keyExtractor={(user: User) => user.email}
           renderItem={({ item }: { item: User }) => (
             <View>
               <Text>Name: {item.name}</Text>
