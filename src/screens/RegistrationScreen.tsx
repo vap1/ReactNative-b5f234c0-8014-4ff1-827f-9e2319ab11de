@@ -11,7 +11,7 @@ const RegistrationScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { login } = useAuthContext();
+  const { loginUser } = useAuthContext();
 
   const handleRegistration = async () => {
     setIsLoading(true);
@@ -26,18 +26,18 @@ const RegistrationScreen = () => {
       };
 
       // Call the registerUser API
-      const response: UserRegistrationResponse = await registerUser(registrationRequest);
+      const registrationResponse: UserRegistrationResponse = await registerUser(registrationRequest);
 
-      if (response.success) {
+      if (registrationResponse.success) {
         // Registration successful, log in the user
-        await login(email, password);
+        await loginUser(email, password);
       } else {
         // Registration failed, display the error message
-        setErrorMessage(response.message);
+        setErrorMessage(registrationResponse.message);
       }
     } catch (error) {
       // Handle any API errors
-      setErrorMessage('An error occurred during registration.');
+      setErrorMessage('An error occurred during registration. Please try again.');
     }
 
     setIsLoading(false);
