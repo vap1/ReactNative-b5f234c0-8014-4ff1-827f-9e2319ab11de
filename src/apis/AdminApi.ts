@@ -22,7 +22,7 @@ const generateRandomUserData = (): User => {
 const getAdminUserDetails = (request: AdminUserDetailsRequest): AdminUserDetailsResponse => {
   console.log('Fetching admin user details...');
 
-  // Generate random user data
+  // Simulating API call and generating random user data
   const users: User[] = [];
   for (let i = 0; i < 10; i++) {
     const user = generateRandomUserData();
