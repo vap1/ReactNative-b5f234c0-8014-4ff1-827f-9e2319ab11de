@@ -10,17 +10,20 @@ const LoginScreen = () => {
   const { setToken } = useAuthContext();
 
   const handleLogin = async () => {
-    console.log('Login button tapped');
+    console.log('Login button clicked');
     try {
       const request: UserLoginRequest = {
         email,
         password,
       };
+
+      console.log('Sending login request:', request);
       const response: UserLoginResponse = await loginUser(request);
-      console.log('Login API response:', response);
+
+      console.log('Received login response:', response);
       if (response.success) {
         setToken(response.token);
-        console.log('User logged in successfully');
+        console.log('Login successful');
       } else {
         console.log('Login failed:', response.message);
       }
