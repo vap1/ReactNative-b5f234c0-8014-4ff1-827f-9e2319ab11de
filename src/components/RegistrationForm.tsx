@@ -1,60 +1,41 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
-
+import { Text, TextInput, Button } from 'react-native';
 import { registerUser, UserRegistrationRequest, UserRegistrationResponse } from '../apis/UserApi';
-import { UserContext } from '../contexts/UserContext';
+import { useAuthContext } from '../contexts/AuthContext';
 
-const RegistrationForm: React.FC = () => {
+const RegistrationForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { setToken } = useAuthContext();
 
   const handleRegistration = async () => {
+    console.log('Registration form submitted');
     try {
-      setIsLoading(true);
-      setError('');
-
-      // Create the registration request object
-      const registrationRequest: UserRegistrationRequest = {
+      const request: UserRegistrationRequest = {
         name,
         email,
         password,
       };
 
-      console.log('Registration Request:', registrationRequest);
+      const response: UserRegistrationResponse = await registerUser(request);
+      console.log('Registration API response:', response);
 
-      // Make the API call to register the user
-      const registrationResponse: UserRegistrationResponse = await registerUser(registrationRequest);
-
-      console.log('Registration Response:', registrationResponse);
-
-      if (registrationResponse.success) {
-        // Registration successful, update the user context
-        // You can use the setUser function from the UserContext to update the user state
-        // Example: setUser(registrationResponse.user);
-
-        console.log('User registration successful!');
+      if (response.success) {
+        console.log('Registration successful');
+        setToken(response.token);
       } else {
-        // Registration failed, display the error message
-        setError(registrationResponse.message);
-
-        console.log('User registration failed:', registrationResponse.message);
+        console.log('Registration failed:', response.message);
       }
     } catch (error) {
-      // Handle any errors that occur during the registration process
-      setError('An error occurred during registration.');
-
-      console.log('Error during user registration:', error);
-    } finally {
-      setIsLoading(false);
+      console.log('Registration error:', error.message);
     }
   };
 
   return (
-    <View>
+    <>
+      <Text>Registration Form</Text>
       <TextInput
         placeholder="Name"
         value={name}
@@ -71,13 +52,8 @@ const RegistrationForm: React.FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button
-        title={isLoading ? 'Loading...' : 'Register'}
-        onPress={handleRegistration}
-        disabled={isLoading}
-      />
-      {error ? <Text>{error}</Text> : null}
-    </View>
+      <Button title="Register" onPress={handleRegistration} />
+    </>
   );
 };
 
