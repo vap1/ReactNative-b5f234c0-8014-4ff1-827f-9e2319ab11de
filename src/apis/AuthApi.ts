@@ -21,11 +21,17 @@ const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> 
     // Log any errors
     console.error('Login API Error:', error);
 
-    // Throw the error for error handling in the calling function
-    throw error;
+    // Generate random error message for the response
+    const response: UserLoginResponse = {
+      success: false,
+      message: 'An error occurred during login',
+    };
+
+    // Log the response details
+    console.log('Login API Response:', response);
+
+    return response;
   }
 };
 
-export default {
-  loginUser,
-};
+export default loginUser;
