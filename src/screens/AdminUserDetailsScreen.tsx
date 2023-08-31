@@ -12,11 +12,11 @@ const AdminUserDetailsScreen: React.FC = () => {
   }, []);
 
   console.log('Rendering AdminUserDetailsScreen...');
-  
+
   return (
     <View>
       <Text>Admin User Details</Text>
-      {users.map((user: any) => (
+      {users.map((user) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
           <Text>Email: {user.email}</Text>
