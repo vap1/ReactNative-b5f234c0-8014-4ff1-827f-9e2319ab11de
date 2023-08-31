@@ -1,7 +1,5 @@
 
-// File: src/types/Types.ts
-
-export interface User {
+interface User {
   name: string;
   email: string;
   contactInfo?: string;
@@ -9,38 +7,37 @@ export interface User {
   profilePicture?: string;
 }
 
-export interface UserRegistrationRequest {
+interface UserRegistrationRequest {
   name: string;
   email: string;
   password: string;
 }
 
-export interface UserRegistrationResponse {
+interface UserRegistrationResponse {
   success: boolean;
   message: string;
 }
 
-export interface UserLoginRequest {
+interface UserLoginRequest {
   email: string;
   password: string;
 }
 
-export interface UserLoginResponse {
+interface UserLoginResponse {
   success: boolean;
   message: string;
   token?: string;
 }
 
-export interface UserProfileRequest {
+interface UserProfileRequest {
   token: string;
 }
 
-export interface UserProfileResponse {
-  success: boolean;
+interface UserProfileResponse {
   user: User;
 }
 
-export interface UserProfileUpdateRequest {
+interface UserProfileUpdateRequest {
   token: string;
   name?: string;
   contactInfo?: string;
@@ -48,16 +45,29 @@ export interface UserProfileUpdateRequest {
   profilePicture?: string;
 }
 
-export interface UserProfileUpdateResponse {
+interface UserProfileUpdateResponse {
   success: boolean;
   message: string;
 }
 
-export interface AdminUserDetailsRequest {
+interface AdminUserDetailsRequest {
   token: string;
 }
 
-export interface AdminUserDetailsResponse {
+interface AdminUserDetailsResponse {
   users: User[];
-  error?: string;
 }
+
+export {
+  User,
+  UserRegistrationRequest,
+  UserRegistrationResponse,
+  UserLoginRequest,
+  UserLoginResponse,
+  UserProfileRequest,
+  UserProfileResponse,
+  UserProfileUpdateRequest,
+  UserProfileUpdateResponse,
+  AdminUserDetailsRequest,
+  AdminUserDetailsResponse,
+};
