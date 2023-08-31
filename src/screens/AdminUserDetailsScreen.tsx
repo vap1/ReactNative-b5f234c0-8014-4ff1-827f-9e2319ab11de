@@ -1,38 +1,39 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { View, Text } from 'react-native';
-import { User } from '../types/Types';
+import { UserContext } from '../contexts/UserContext';
+import { AdminUserDetailsRequest, AdminUserDetailsResponse } from '../types/Types';
 import { getAdminUserDetails } from '../apis/AdminApi';
 
 const AdminUserDetailsScreen: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const { users, setUsers } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
+    const fetchAdminUserDetails = async () => {
       try {
-        // Log the admin user details request
-        console.log('Admin user details request');
+        // Step 1: Create the request object
+        const request: AdminUserDetailsRequest = {
+          token: 'your_admin_token',
+        };
 
-        // Make the API call to get admin user details
-        const response = await getAdminUserDetails();
+        // Step 2: Make the API call to get admin user details
+        const response: AdminUserDetailsResponse = await getAdminUserDetails(request);
 
-        // Log the admin user details response
-        console.log('Admin user details response:', response);
-
-        // Update the users state with the fetched user details
+        // Step 3: Update the user context with the received user details
         setUsers(response.users);
+
+        console.log('Admin User Details:', response.users);
       } catch (error) {
-        // Log any errors that occur during fetching admin user details
-        console.error('Admin user details error:', error);
+        console.error('Error fetching admin user details:', error);
       }
     };
 
-    fetchUserDetails();
+    fetchAdminUserDetails();
   }, []);
 
   return (
     <View>
-      <Text>User List:</Text>
+      <Text>Admin User Details:</Text>
       {users.map((user) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
