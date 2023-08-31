@@ -1,74 +1,55 @@
 
 import React, { createContext, useState, useEffect } from 'react';
-import { UserProfileRequest, UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
+import { UserProfileResponse, UserProfileUpdateRequest } from '../types/Types';
 import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
 
 interface UserContextProps {
-  userProfile: UserProfileResponse | null;
-  loading: boolean;
-  error: string | null;
-  getUserProfile: () => void;
-  updateUserProfile: (request: UserProfileUpdateRequest) => void;
+  user: UserProfileResponse | null;
+  setUser: React.Dispatch<React.SetStateAction<UserProfileResponse | null>>;
 }
 
 export const UserContext = createContext<UserContextProps>({
-  userProfile: null,
-  loading: false,
-  error: null,
-  getUserProfile: () => {},
-  updateUserProfile: () => {},
+  user: null,
+  setUser: () => {},
 });
 
 export const UserProvider: React.FC = ({ children }) => {
-  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
-    getUserProfile();
-  }, []);
-
-  const getUserProfile = () => {
-    setLoading(true);
-    setError(null);
+    // Log: Fetching user profile
+    console.log('Fetching user profile');
 
     getUserProfile()
-      .then((response: UserProfileResponse) => {
-        setUserProfile(response);
-        setLoading(false);
+      .then((response) => {
+        // Log: User profile fetched successfully
+        console.log('User profile fetched successfully');
+        setUser(response);
       })
-      .catch((error: string) => {
-        setError(error);
-        setLoading(false);
+      .catch((error) => {
+        // Log: Error fetching user profile
+        console.error('Error fetching user profile:', error);
       });
-  };
+  }, []);
 
-  const updateUserProfile = (request: UserProfileUpdateRequest) => {
-    setLoading(true);
-    setError(null);
+  const handleUpdateProfile = (request: UserProfileUpdateRequest) => {
+    // Log: Updating user profile
+    console.log('Updating user profile');
 
     updateUserProfile(request)
-      .then((response: UserProfileUpdateResponse) => {
-        // Log the response here
-        console.log('User profile update response:', response);
-        getUserProfile();
+      .then((response) => {
+        // Log: User profile updated successfully
+        console.log('User profile updated successfully');
+        setUser(response);
       })
-      .catch((error: string) => {
-        setError(error);
-        setLoading(false);
+      .catch((error) => {
+        // Log: Error updating user profile
+        console.error('Error updating user profile:', error);
       });
   };
 
   return (
-    <UserContext.Provider
-      value={{
-        userProfile,
-        loading,
-        error,
-        getUserProfile,
-        updateUserProfile,
-      }}
-    >
+    <UserContext.Provider value={{ user, setUser: handleUpdateProfile }}>
       {children}
     </UserContext.Provider>
   );
