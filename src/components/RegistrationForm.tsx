@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Button } from 'react-native';
 import { registerUser, UserRegistrationRequest, UserRegistrationResponse } from '../apis/UserApi';
 import { useAuthContext } from '../contexts/AuthContext';
 
@@ -11,34 +11,26 @@ const RegistrationForm = () => {
   const { loginUser } = useAuthContext();
 
   const handleRegistration = async () => {
+    console.log('Registration form submitted');
     try {
-      // Step 1: User enters their name, email, and password
-      console.log('Name:', name);
-      console.log('Email:', email);
-      console.log('Password:', password);
-
-      // Step 2: User submits the registration form
-      console.log('Submitting registration form...');
-
-      const registrationRequest: UserRegistrationRequest = {
+      const request: UserRegistrationRequest = {
         name,
         email,
         password,
       };
 
-      const registrationResponse: UserRegistrationResponse = await registerUser(registrationRequest);
+      const response: UserRegistrationResponse = await registerUser(request);
+      console.log('Registration response:', response);
 
-      // Step 3: Outcomes
-      if (registrationResponse.success) {
-        console.log('Registration successful:', registrationResponse.message);
-        loginUser(email, password); // Automatically log in the user after registration
+      if (response.success) {
+        console.log('User registration successful');
+        // Automatically log in the user after successful registration
+        await loginUser({ email, password });
       } else {
-        console.log('Registration failed:', registrationResponse.message);
-        Alert.alert('Registration Failed', registrationResponse.message);
+        console.log('User registration failed:', response.message);
       }
     } catch (error) {
-      console.error('Error during registration:', error);
-      Alert.alert('Error', 'An error occurred during registration. Please try again later.');
+      console.log('Error during user registration:', error);
     }
   };
 
