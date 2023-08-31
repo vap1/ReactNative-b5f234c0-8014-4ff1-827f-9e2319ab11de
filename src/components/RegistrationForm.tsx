@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
-import { registerUser } from '../apis/UserApi';
+import { View, TextInput, Button } from 'react-native';
 import { UserRegistrationRequest } from '../types/Types';
+import { registerUser } from '../apis/UserApi';
 
 const RegistrationForm: React.FC = () => {
   const [name, setName] = useState('');
@@ -11,29 +11,27 @@ const RegistrationForm: React.FC = () => {
 
   const handleRegistration = async () => {
     try {
-      const request: UserRegistrationRequest = {
-        name,
-        email,
-        password,
-      };
-
       // Log the registration request
-      console.log('Registration Request:', request);
+      console.log('Registration request:', { name, email, password });
 
       // Make the API call to register the user
+      const request: UserRegistrationRequest = { name, email, password };
       const response = await registerUser(request);
 
       // Log the registration response
-      console.log('Registration Response:', response);
+      console.log('Registration response:', response);
 
-      // Show success message to the user
-      Alert.alert('Success', response.message);
+      // Handle the registration success or failure
+      if (response.success) {
+        // Registration successful
+        console.log('User registration successful');
+      } else {
+        // Registration failed
+        console.log('User registration failed');
+      }
     } catch (error) {
-      // Log any errors
-      console.error('Registration Error:', error);
-
-      // Show error message to the user
-      Alert.alert('Error', 'Failed to register user. Please try again.');
+      // Log any errors that occur during registration
+      console.error('Registration error:', error);
     }
   };
 
