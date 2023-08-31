@@ -1,5 +1,5 @@
 
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
@@ -9,40 +9,42 @@ export const AuthContext = createContext<AuthContextProps>({
   logout: () => {},
 });
 
-const AuthProvider: React.FC = ({ children }) => {
+export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<UserLoginResponse | null>(null);
 
-  const login = async (email: string, password: string) => {
-    try {
-      // Log the login attempt
-      console.log(`Logging in with email: ${email}`);
-
-      // Create the login request
-      const loginRequest: UserLoginRequest = {
-        email,
-        password,
-      };
-
-      // Make the API call to login
-      const response = await loginUser(loginRequest);
-
-      // Log the login response
-      console.log(`Login response: ${JSON.stringify(response)}`);
-
-      // Update the user state
-      setUser(response);
-    } catch (error) {
-      // Log any errors that occur during login
-      console.error(`Error during login: ${error.message}`);
+  useEffect(() => {
+    // Check if the user is already logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Fetch user profile using the token
+      // Add appropriate API call here
+      // Example: getUserProfile(token).then((response) => setUser(response.user));
     }
+  }, []);
+
+  const login = (request: UserLoginRequest) => {
+    // Add loading state and error handling logic here
+    // Example: setLoading(true);
+    loginUser(request)
+      .then((response) => {
+        // Set the user in the context and store the token
+        setUser(response);
+        localStorage.setItem('token', response.token);
+      })
+      .catch((error) => {
+        // Handle login error
+        console.error('Login error:', error);
+      })
+      .finally(() => {
+        // Add loading state handling here
+        // Example: setLoading(false);
+      });
   };
 
   const logout = () => {
-    // Log the logout attempt
-    console.log('Logging out');
-
-    // Clear the user state
+    // Clear the user from the context and remove the token
     setUser(null);
+    localStorage.removeItem('token');
   };
 
   return (
@@ -51,5 +53,3 @@ const AuthProvider: React.FC = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export default AuthProvider;
