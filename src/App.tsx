@@ -33,17 +33,29 @@ const AppStack = () => {
 };
 
 const App = () => {
+  console.log('Rendering App');
   const isLoggedIn = false; // Check if the user is logged in
   const isAdmin = false; // Check if the user is an admin
-
-  console.log('Rendering App');
 
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        isAdmin ? <AppStack /> : <ProfileScreen />
+        isAdmin ? (
+          <>
+            {console.log('User is an admin')}
+            <AppStack />
+          </>
+        ) : (
+          <>
+            {console.log('User is not an admin')}
+            <ProfileScreen />
+          </>
+        )
       ) : (
-        <AuthStack />
+        <>
+          {console.log('User is not logged in')}
+          <AuthStack />
+        </>
       )}
     </NavigationContainer>
   );
