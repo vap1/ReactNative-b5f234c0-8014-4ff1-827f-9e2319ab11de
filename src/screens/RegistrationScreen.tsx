@@ -21,18 +21,22 @@ const RegistrationScreen = () => {
         password,
       };
 
+      console.log('Sending registration request:', request);
+
       const response: UserRegistrationResponse = await registerUser(request);
 
+      console.log('Received registration response:', response);
+
       if (response.success) {
-        console.log('Registration successful');
+        console.log('Registration successful!');
         // Redirect to the login screen or perform any other necessary actions
       } else {
         console.log('Registration failed:', response.message);
         setErrorMessage(response.message);
       }
     } catch (error) {
-      console.log('Error during registration:', error.message);
-      setErrorMessage('An error occurred during registration');
+      console.log('Error occurred during registration:', error.message);
+      setErrorMessage('An error occurred during registration. Please try again later.');
     }
 
     setIsLoading(false);
