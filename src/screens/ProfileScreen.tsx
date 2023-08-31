@@ -1,50 +1,52 @@
 
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { UserProfileRequest, UserProfileResponse, User } from '../types/Types';
-import { getUserProfile } from '../apis/ProfileApi';
+import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 
 const ProfileScreen: React.FC = () => {
-  const { userProfile, fetchUserProfile } = useContext(UserContext);
-  const [user, setUser] = useState<User | null>(null);
+  const { getUserProfile } = useContext(UserContext);
+  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchUserProfile = async () => {
       try {
-        // Log the fetch user profile request
-        console.log('Fetch user profile request');
+        // Step 1: User logs in to their account.
+        console.log('Step 1: User logs in to their account.');
 
-        // Make the API call to fetch user profile
-        const request: UserProfileRequest = { token: userProfile?.user.token || '' };
-        const response: UserProfileResponse = await getUserProfile(request);
+        // Step 2: Fetch user profile from the API.
+        console.log('Step 2: Fetch user profile from the API.');
+        const userProfileRequest: UserProfileRequest = {
+          token: 'user_token', // Replace with the actual user token
+        };
+        const userProfileResponse = await getUserProfile(userProfileRequest);
 
-        // Log the fetch user profile response
-        console.log('Fetch user profile response:', response);
-
-        // Update the user state with the fetched profile
-        setUser(response.user);
+        // Step 3: Update the user profile state.
+        console.log('Step 3: Update the user profile state.');
+        setUserProfile(userProfileResponse);
       } catch (error) {
-        // Log any errors that occur during fetch user profile
-        console.error('Fetch user profile error:', error);
+        console.error('Error fetching user profile:', error);
       }
     };
 
-    fetchProfile();
-  }, [userProfile]);
+    fetchUserProfile();
+  }, []);
 
   return (
     <View>
-      <Text>User Profile:</Text>
-      {user && (
+      <Text>Profile Screen</Text>
+      {userProfile ? (
         <View>
-          <Text>Name: {user.name}</Text>
-          <Text>Email: {user.email}</Text>
-          <Text>Contact Info: {user.contactInfo}</Text>
-          <Text>Address: {user.address}</Text>
-          <Text>Profile Picture: {user.profilePicture}</Text>
+          <Text>Name: {userProfile.user.name}</Text>
+          <Text>Email: {userProfile.user.email}</Text>
+          <Text>Contact Info: {userProfile.user.contactInfo}</Text>
+          <Text>Address: {userProfile.user.address}</Text>
+          <Text>Profile Picture: {userProfile.user.profilePicture}</Text>
         </View>
+      ) : (
+        <Text>Loading...</Text>
       )}
+      <Button title="Edit Profile" onPress={() => console.log('Edit Profile button pressed')} />
     </View>
   );
 };
