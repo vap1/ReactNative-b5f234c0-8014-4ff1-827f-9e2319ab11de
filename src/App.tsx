@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,7 +13,10 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
-  console.log('Rendering AuthStack');
+  useEffect(() => {
+    console.log('Rendering AuthStack');
+  }, []);
+
   return (
     <Stack.Navigator>
       <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
@@ -23,7 +26,10 @@ const AuthStack = () => {
 };
 
 const AppStack = () => {
-  console.log('Rendering AppStack');
+  useEffect(() => {
+    console.log('Rendering AppStack');
+  }, []);
+
   return (
     <Tab.Navigator>
       <Tab.Screen name="Profile" component={ProfileScreen} />
@@ -33,10 +39,12 @@ const AppStack = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    console.log('Rendering App');
+  }, []);
+
   const isLoggedIn = false; // Check if the user is logged in
   const isAdmin = false; // Check if the user is an admin
-
-  console.log('Rendering App');
 
   return (
     <NavigationContainer>
