@@ -13,10 +13,13 @@ const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> 
     };
 
     console.log('Received login response:', response);
+
     return response;
   } catch (error) {
     console.error('Error occurred during login:', error);
-    throw error;
+
+    // Simulating error response
+    throw new Error('Login failed');
   }
 };
 
