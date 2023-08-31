@@ -5,19 +5,17 @@ import { UserContext, UserContextProps } from '../contexts/UserContext';
 import { getUsers, User } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
-  const { users, getUsers }: UserContextProps = useContext(UserContext);
+  const { users, getUsers } = useContext<UserContextProps>(UserContext);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers();
-        console.log('Fetched users:', response);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchUsers();
+    console.log('Fetching user details...');
+    getUsers()
+      .then((response: User[]) => {
+        console.log('User details fetched successfully:', response);
+      })
+      .catch((error: Error) => {
+        console.log('Error fetching user details:', error);
+      });
   }, []);
 
   return (
