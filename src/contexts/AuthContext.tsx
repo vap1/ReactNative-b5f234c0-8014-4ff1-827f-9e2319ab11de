@@ -3,37 +3,40 @@ import React, { createContext, useState } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
+// Create the AuthContext
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   login: () => {},
   logout: () => {},
 });
 
-const AuthProvider: React.FC = ({ children }) => {
+// Create the AuthProvider component
+export const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<UserLoginResponse | null>(null);
 
+  // Function to handle user login
   const login = async (request: UserLoginRequest) => {
     try {
-      console.log('AuthContext: Logging in...');
+      console.log('Logging in...');
       const response = await loginUser(request);
-      console.log('AuthContext: Login successful');
+      console.log('Login successful:', response);
       setUser(response);
     } catch (error) {
-      console.error('AuthContext: Login failed', error);
-      // Handle error
+      console.error('Login failed:', error);
+      throw error;
     }
   };
 
+  // Function to handle user logout
   const logout = () => {
-    console.log('AuthContext: Logging out...');
+    console.log('Logging out...');
     setUser(null);
   };
 
+  // Provide the AuthContext value to the children components
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthProvider;
