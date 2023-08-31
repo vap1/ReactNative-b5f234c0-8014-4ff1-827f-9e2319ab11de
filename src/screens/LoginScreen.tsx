@@ -1,50 +1,32 @@
 
-import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../contexts/AuthContext';
-import { UserLoginRequest } from '../apis/AuthApi';
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text } from 'react-native';
+import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
+import { useAuthContext } from '../contexts/AuthContext';
 
 const LoginScreen = () => {
-  const navigation = useNavigation();
-  const { loginUser } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { setToken } = useAuthContext();
 
   const handleLogin = async () => {
-    setIsLoading(true);
-    setError('');
-
+    console.log('Login button tapped');
     try {
-      // Validate input
-      if (!email || !password) {
-        throw new Error('Please enter your email and password.');
-      }
-
-      // Create login request
-      const loginRequest: UserLoginRequest = {
+      const request: UserLoginRequest = {
         email,
         password,
       };
-
-      // Call the login API
-      const response = await loginUser(loginRequest);
-
+      const response: UserLoginResponse = await loginUser(request);
+      console.log('Login API response:', response);
       if (response.success) {
-        // Login successful, navigate to the Profile screen
-        navigation.navigate('Profile');
+        setToken(response.token);
+        console.log('User logged in successfully');
       } else {
-        // Login failed, display error message
-        setError(response.message);
+        console.log('Login failed:', response.message);
       }
     } catch (error) {
-      // Handle any errors during login
-      setError(error.message);
+      console.log('Error occurred during login:', error);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -61,12 +43,7 @@ const LoginScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button
-        title={isLoading ? 'Logging in...' : 'Login'}
-        onPress={handleLogin}
-        disabled={isLoading}
-      />
-      {error ? <Text>{error}</Text> : null}
+      <Button title="Login" onPress={handleLogin} />
     </View>
   );
 };
