@@ -30,15 +30,27 @@ const AppNavigator = () => {
   const isLoggedIn = false; // Check if the user is logged in
   const isAdmin = false; // Check if the user is an admin
 
-  console.log('AppNavigator - isLoggedIn:', isLoggedIn);
-  console.log('AppNavigator - isAdmin:', isAdmin);
+  console.log('AppNavigator - Start');
 
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        isAdmin ? <AppStack /> : <ProfileScreen />
+        isAdmin ? (
+          <>
+            {console.log('AppNavigator - Admin User')}
+            <AppStack />
+          </>
+        ) : (
+          <>
+            {console.log('AppNavigator - Logged In User')}
+            <ProfileScreen />
+          </>
+        )
       ) : (
-        <AuthStack />
+        <>
+          {console.log('AppNavigator - Guest User')}
+          <AuthStack />
+        </>
       )}
     </NavigationContainer>
   );
