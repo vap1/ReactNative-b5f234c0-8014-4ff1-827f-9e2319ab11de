@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Text, TextInput, Button } from 'react-native';
+import { View, TextInput, Button, Alert } from 'react-native';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { useAuthContext } from '../contexts/AuthContext';
 
@@ -10,43 +10,56 @@ const LoginForm = () => {
   const { setToken } = useAuthContext();
 
   const handleLogin = async () => {
-    console.log('Logging in...');
     try {
-      const request: UserLoginRequest = {
+      // Step 1: Validate input
+      if (!email || !password) {
+        Alert.alert('Error', 'Please enter email and password');
+        return;
+      }
+
+      // Step 2: Create login request
+      const loginRequest: UserLoginRequest = {
         email,
         password,
       };
 
-      const response: UserLoginResponse = await loginUser(request);
-      console.log('Login response:', response);
+      // Step 3: Make API call to login user
+      const response: UserLoginResponse = await loginUser(loginRequest);
 
+      // Step 4: Handle API response
       if (response.success) {
+        // Step 5: Set token in context
         setToken(response.token);
-        console.log('Login successful');
+        Alert.alert('Success', 'Login successful');
       } else {
-        console.log('Login failed:', response.message);
+        Alert.alert('Error', response.message);
       }
     } catch (error) {
-      console.log('Login error:', error);
+      console.error('Error occurred during login:', error);
+      Alert.alert('Error', 'An error occurred during login');
     }
   };
 
   return (
-    <>
-      <Text>Login</Text>
+    <View>
+      {/* Step 6: Render email input */}
       <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
       />
+
+      {/* Step 7: Render password input */}
       <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
+
+      {/* Step 8: Render login button */}
       <Button title="Login" onPress={handleLogin} />
-    </>
+    </View>
   );
 };
 
