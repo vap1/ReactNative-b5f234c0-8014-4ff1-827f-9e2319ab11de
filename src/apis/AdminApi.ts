@@ -2,34 +2,47 @@
 import { AdminUserDetailsRequest, AdminUserDetailsResponse, User } from '../types/Types';
 
 // Function to generate random user data
-const generateRandomUser = (): User => {
-  const randomId = Math.floor(Math.random() * 1000);
-  return {
-    name: `User ${randomId}`,
-    email: `user${randomId}@example.com`,
-    contactInfo: `Contact Info ${randomId}`,
-    address: `Address ${randomId}`,
-    profilePicture: `https://example.com/profile/${randomId}.jpg`,
+const generateRandomUserData = (): User => {
+  // Generate random user details
+  const user: User = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    contactInfo: '1234567890',
+    address: '123 Main St',
+    profilePicture: 'https://example.com/profile.jpg',
   };
+
+  return user;
 };
 
 // Function to get admin user details
 export const getAdminUserDetails = async (request: AdminUserDetailsRequest): Promise<AdminUserDetailsResponse> => {
   try {
-    console.log('Fetching admin user details...');
-    // Simulating API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // Log the request details
+    console.log('Admin User Details Request:', request);
 
     // Generate random user data
     const users: User[] = [];
     for (let i = 0; i < 10; i++) {
-      users.push(generateRandomUser());
+      const user = generateRandomUserData();
+      users.push(user);
     }
 
-    console.log('Admin user details fetched successfully:', users);
-    return { users };
+    // Log the response details
+    console.log('Admin User Details Response:', users);
+
+    // Return the response
+    return {
+      users,
+    };
   } catch (error) {
-    console.error('Failed to fetch admin user details:', error);
-    throw new Error('Failed to fetch admin user details');
+    // Log any errors
+    console.error('Error in getting admin user details:', error);
+
+    // Return an error response
+    return {
+      users: [],
+      error: 'Failed to get admin user details',
+    };
   }
 };
