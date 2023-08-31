@@ -1,68 +1,66 @@
 
 import React, { useContext, useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
+import { View, TextInput, Button, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
 import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { User, UserProfileUpdateRequest } from '../types/Types';
 
 const ProfileForm: React.FC = () => {
-  const { userProfile, fetchUserProfile } = useContext(UserContext);
-  const [name, setName] = useState(userProfile?.user.name || '');
-  const [contactInfo, setContactInfo] = useState(userProfile?.user.contactInfo || '');
-  const [address, setAddress] = useState(userProfile?.user.address || '');
+  const { user, setUser } = useContext(UserContext);
+  const [name, setName] = useState<string>(user.name);
+  const [contactInfo, setContactInfo] = useState<string>(user.contactInfo || '');
+  const [address, setAddress] = useState<string>(user.address || '');
+  const [profilePicture, setProfilePicture] = useState<string>(user.profilePicture || '');
 
-  const handleProfileUpdate = async () => {
+  const handleSaveChanges = async () => {
     try {
-      // Log the profile update request
-      console.log('Profile update request:', { name, contactInfo, address });
-
-      // Make the API call to update the user profile
+      // Prepare the request payload
       const request: UserProfileUpdateRequest = {
-        token: userProfile?.user.token || '',
+        token: user.token,
         name,
         contactInfo,
         address,
+        profilePicture,
       };
-      const response: UserProfileUpdateResponse = await updateUserProfile(request);
 
-      // Log the profile update response
-      console.log('Profile update response:', response);
+      // Make the API call to update the user profile
+      const response = await updateUserProfile(request);
 
-      // Handle the profile update success or failure
       if (response.success) {
-        // Profile update successful
-        console.log('User profile update successful');
+        // Update the user context with the updated profile information
+        const updatedUser: User = {
+          ...user,
+          name,
+          contactInfo,
+          address,
+          profilePicture,
+        };
+        setUser(updatedUser);
 
-        // Fetch the updated user profile
-        await fetchUserProfile(request.token);
+        console.log('Profile updated successfully!');
       } else {
-        // Profile update failed
-        console.log('User profile update failed');
+        console.log('Failed to update profile:', response.message);
       }
     } catch (error) {
-      // Log any errors that occur during profile update
-      console.error('Profile update error:', error);
+      console.log('Error updating profile:', error.message);
     }
   };
 
   return (
     <View>
-      <TextInput
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        placeholder="Contact Info"
-        value={contactInfo}
-        onChangeText={setContactInfo}
-      />
-      <TextInput
-        placeholder="Address"
-        value={address}
-        onChangeText={setAddress}
-      />
-      <Button title="Save" onPress={handleProfileUpdate} />
+      <Text>Name:</Text>
+      <TextInput value={name} onChangeText={setName} />
+
+      <Text>Contact Info:</Text>
+      <TextInput value={contactInfo} onChangeText={setContactInfo} />
+
+      <Text>Address:</Text>
+      <TextInput value={address} onChangeText={setAddress} />
+
+      <Text>Profile Picture:</Text>
+      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
+
+      <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
 };
