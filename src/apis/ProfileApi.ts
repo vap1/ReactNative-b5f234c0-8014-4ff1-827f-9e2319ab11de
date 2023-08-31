@@ -24,15 +24,15 @@ const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileR
         name: 'John Doe',
         email: 'johndoe@example.com',
         contactInfo: '1234567890',
-        address: '123 Main St, City, State',
+        address: '123 Main St',
         profilePicture: 'https://example.com/profile.jpg',
       },
     };
 
-    console.log('User profile fetched successfully');
+    console.log('User profile fetched successfully:', userProfile);
     return userProfile;
   } catch (error) {
-    console.error('Error fetching user profile:', error.message);
+    console.error('Error fetching user profile:', error);
     throw error;
   }
 };
