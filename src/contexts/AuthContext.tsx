@@ -4,52 +4,44 @@ import { UserLoginRequest, UserLoginResponse } from '../types/Types';
 import { loginUser } from '../apis/AuthApi';
 
 interface AuthContextProps {
-  userToken: string | null;
+  isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
-  userToken: null,
+  isLoggedIn: false,
   login: async () => {},
   logout: () => {},
 });
 
 const AuthContextProvider: React.FC = ({ children }) => {
-  const [userToken, setUserToken] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const login = async (email: string, password: string) => {
     try {
-      // Log the login request
-      console.log('Login request:', { email, password });
+      // Make API call to login user
+      const loginRequest: UserLoginRequest = { email, password };
+      const response: UserLoginResponse = await loginUser(loginRequest);
 
-      // Make the API call to login
-      const request: UserLoginRequest = { email, password };
-      const response: UserLoginResponse = await loginUser(request);
-
-      // Log the login response
-      console.log('Login response:', response);
-
-      // Update the user token if login is successful
       if (response.success) {
-        setUserToken(response.token || null);
+        setIsLoggedIn(true);
+        console.log('User logged in successfully');
+      } else {
+        console.log('Login failed:', response.message);
       }
     } catch (error) {
-      // Log any errors that occur during login
-      console.error('Login error:', error);
+      console.log('Error occurred during login:', error);
     }
   };
 
   const logout = () => {
-    // Log the logout action
-    console.log('Logout');
-
-    // Clear the user token
-    setUserToken(null);
+    setIsLoggedIn(false);
+    console.log('User logged out');
   };
 
   return (
-    <AuthContext.Provider value={{ userToken, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
