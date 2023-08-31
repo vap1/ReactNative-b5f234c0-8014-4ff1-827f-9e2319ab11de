@@ -4,7 +4,7 @@ import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileResponse> => {
   try {
     console.log('Fetching user profile...');
-    // Make API call to fetch user profile data
+    // Make API call to fetch user profile data from the backend
     // Replace the following code with your actual API call
     const response = await fetch('/api/profile', {
       method: 'GET',
@@ -18,7 +18,7 @@ const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileR
       throw new Error('Failed to fetch user profile');
     }
 
-    // Generate random user profile data for testing
+    // Generate random user profile data for testing purposes
     const userProfile: UserProfileResponse = {
       user: {
         name: 'John Doe',
