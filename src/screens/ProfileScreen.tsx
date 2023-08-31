@@ -1,51 +1,55 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { UserContext, UserProfileUpdateRequest, UserProfileResponse } from '../contexts/UserContext';
-import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { UserContext, UserProfileResponse, UserProfileUpdateRequest, updateUserProfile } from '../contexts/UserContext';
 
 const ProfileScreen: React.FC = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser, getUserProfile } = useContext(UserContext);
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
 
   useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setContactInfo(user.contactInfo || '');
-      setAddress(user.address || '');
-    }
-  }, [user]);
+    console.log('Fetching user profile...');
+    getUserProfile()
+      .then((response: UserProfileResponse) => {
+        console.log('User profile fetched:', response);
+        if (response) {
+          setName(response.name);
+          setContactInfo(response.contactInfo);
+          setAddress(response.address);
+        }
+      })
+      .catch((error: Error) => {
+        console.log('Error fetching user profile:', error.message);
+      });
+  }, []);
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = () => {
     console.log('Saving changes...');
-    const request: UserProfileUpdateRequest = {
-      token: user?.token || '',
+    const updatedProfile: UserProfileUpdateRequest = {
       name,
       contactInfo,
       address,
     };
 
-    try {
-      const response = await updateUserProfile(request);
-      console.log('Profile update response:', response);
-
-      if (response.success) {
-        console.log('Profile updated successfully');
-        const updatedUser: UserProfileResponse = {
-          ...user,
-          name,
-          contactInfo,
-          address,
-        };
-        setUser(updatedUser);
-      } else {
-        console.log('Profile update failed:', response.message);
-      }
-    } catch (error) {
-      console.log('Profile update error:', error);
-    }
+    updateUserProfile(updatedProfile)
+      .then((response: boolean) => {
+        console.log('Profile update response:', response);
+        if (response) {
+          console.log('Changes saved successfully.');
+          // Update the user context with the updated profile
+          setUser((prevUser: UserProfileResponse | null) => ({
+            ...prevUser,
+            name,
+            contactInfo,
+            address,
+          }));
+        }
+      })
+      .catch((error: Error) => {
+        console.log('Error saving changes:', error.message);
+      });
   };
 
   return (
