@@ -1,61 +1,52 @@
 
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Image, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { UserProfileRequest, UserProfileResponse } from '../types/Types';
-import { getProfile } from '../apis/ProfileApi';
+import { UserProfileRequest, UserProfileResponse, User } from '../types/Types';
+import { getUserProfile } from '../apis/ProfileApi';
 
 const ProfileScreen: React.FC = () => {
-  const { user } = useContext(UserContext);
-  const [profile, setProfile] = useState<UserProfileResponse | null>(null);
+  const { userProfile, fetchUserProfile } = useContext(UserContext);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
+    const fetchProfile = async () => {
+      try {
+        // Log the fetch user profile request
+        console.log('Fetch user profile request');
 
-  const fetchProfile = async () => {
-    try {
-      const request: UserProfileRequest = {
-        token: user.token,
-      };
-      const response = await getProfile(request);
-      setProfile(response);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
+        // Make the API call to fetch user profile
+        const request: UserProfileRequest = { token: userProfile?.user.token || '' };
+        const response: UserProfileResponse = await getUserProfile(request);
+
+        // Log the fetch user profile response
+        console.log('Fetch user profile response:', response);
+
+        // Update the user state with the fetched profile
+        setUser(response.user);
+      } catch (error) {
+        // Log any errors that occur during fetch user profile
+        console.error('Fetch user profile error:', error);
+      }
+    };
+
+    fetchProfile();
+  }, [userProfile]);
 
   return (
-    <View style={styles.container}>
-      {profile ? (
-        <>
-          <Image source={{ uri: profile.user.profilePicture }} style={styles.profilePicture} />
-          <Text>Name: {profile.user.name}</Text>
-          <Text>Email: {profile.user.email}</Text>
-          <Text>Contact Info: {profile.user.contactInfo}</Text>
-          <Text>Address: {profile.user.address}</Text>
-        </>
-      ) : (
-        <Text>Loading profile...</Text>
+    <View>
+      <Text>User Profile:</Text>
+      {user && (
+        <View>
+          <Text>Name: {user.name}</Text>
+          <Text>Email: {user.email}</Text>
+          <Text>Contact Info: {user.contactInfo}</Text>
+          <Text>Address: {user.address}</Text>
+          <Text>Profile Picture: {user.profilePicture}</Text>
+        </View>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profilePicture: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 10,
-  },
-});
 
 export default ProfileScreen;
