@@ -14,7 +14,6 @@ const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
   console.log('Rendering AuthStack');
-  
   return (
     <Stack.Navigator>
       <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
@@ -25,7 +24,6 @@ const AuthStack = () => {
 
 const AppStack = () => {
   console.log('Rendering AppStack');
-  
   return (
     <Tab.Navigator>
       <Tab.Screen name="Profile" component={ProfileScreen} />
@@ -36,7 +34,6 @@ const AppStack = () => {
 
 const AppNavigator = () => {
   console.log('Rendering AppNavigator');
-  
   const isLoggedIn = false; // Check if the user is logged in
   const isAdmin = false; // Check if the user is an admin
 
