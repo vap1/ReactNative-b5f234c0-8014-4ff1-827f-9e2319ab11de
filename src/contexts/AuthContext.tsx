@@ -27,7 +27,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       // Step 5: Update the user state with the response
       setUser(response);
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error('Error occurred during login:', error);
     }
   };
 
