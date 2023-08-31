@@ -1,37 +1,24 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
-import { UserRegistrationRequest } from '../types/Types';
-import { registerUser } from '../apis/UserApi';
+import { View, TextInput, Button, Alert } from 'react-native';
 
-const RegistrationForm: React.FC = () => {
+interface RegistrationFormProps {
+  registerUser: (name: string, email: string, password: string) => void;
+}
+
+const RegistrationForm: React.FC<RegistrationFormProps> = ({ registerUser }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegistration = async () => {
-    try {
-      // Log the registration request
-      console.log('Registration request:', { name, email, password });
-
-      // Make the API call to register the user
-      const request: UserRegistrationRequest = { name, email, password };
-      const response = await registerUser(request);
-
-      // Log the registration response
-      console.log('Registration response:', response);
-
-      // Handle the registration success or failure
-      if (response.success) {
-        // Registration successful
-        console.log('User registration successful');
-      } else {
-        // Registration failed
-        console.log('User registration failed');
-      }
-    } catch (error) {
-      // Log any errors that occur during registration
-      console.error('Registration error:', error);
+  const handleRegister = () => {
+    console.log('Registration form submitted');
+    if (name && email && password) {
+      console.log('Registering user...');
+      registerUser(name, email, password);
+    } else {
+      console.log('Missing required fields');
+      Alert.alert('Error', 'Please fill in all required fields');
     }
   };
 
@@ -53,7 +40,7 @@ const RegistrationForm: React.FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegistration} />
+      <Button title="Register" onPress={handleRegister} />
     </View>
   );
 };
