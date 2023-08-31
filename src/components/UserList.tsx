@@ -1,22 +1,17 @@
 
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
-import { User } from '../types/Types';
-import { getAdminUserDetails } from '../apis/AdminApi';
-import { AuthContext } from '../contexts/AuthContext';
+import React, { useContext, useEffect } from 'react';
+import { View, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
+import { AdminUserDetailsResponse, User } from '../types/Types';
+import { getAdminUserDetails } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
-  const { token } = useContext(AuthContext);
-  const { isAdmin } = useContext(UserContext);
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { users, setUsers } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchUserDetails = async () => {
       try {
-        setLoading(true);
-        const response = await getAdminUserDetails(token);
+        const response: AdminUserDetailsResponse = await getAdminUserDetails();
         if (response.success) {
           setUsers(response.users);
         } else {
@@ -24,47 +19,24 @@ const UserList: React.FC = () => {
         }
       } catch (error) {
         console.log('Error fetching user details:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
-    if (isAdmin) {
-      fetchUsers();
-    }
-  }, [token, isAdmin]);
-
-  if (!isAdmin) {
-    return (
-      <View>
-        <Text>You are not authorized to view this page.</Text>
-      </View>
-    );
-  }
-
-  if (loading) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
+    fetchUserDetails();
+  }, []);
 
   return (
     <View>
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item.email}
-        renderItem={({ item }) => (
-          <View>
-            <Text>Name: {item.name}</Text>
-            <Text>Email: {item.email}</Text>
-            <Text>Contact Info: {item.contactInfo}</Text>
-            <Text>Address: {item.address}</Text>
-            <Text>Profile Picture: {item.profilePicture}</Text>
-          </View>
-        )}
-      />
+      <Text>User List:</Text>
+      {users.map((user: User) => (
+        <View key={user.email}>
+          <Text>Name: {user.name}</Text>
+          <Text>Email: {user.email}</Text>
+          <Text>Contact Info: {user.contactInfo}</Text>
+          <Text>Address: {user.address}</Text>
+          <Text>Profile Picture: {user.profilePicture}</Text>
+        </View>
+      ))}
     </View>
   );
 };
