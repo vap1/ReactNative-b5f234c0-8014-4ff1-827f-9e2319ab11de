@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Text, TextInput, Button } from 'react-native';
+import { View, TextInput, Button } from 'react-native';
 import { registerUser, UserRegistrationRequest, UserRegistrationResponse } from '../apis/UserApi';
 import { useAuthContext } from '../contexts/AuthContext';
 
@@ -8,7 +8,7 @@ const RegistrationForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken } = useAuthContext();
+  const { loginUser } = useAuthContext();
 
   const handleRegistration = async () => {
     console.log('Registration form submitted');
@@ -20,22 +20,22 @@ const RegistrationForm = () => {
       };
 
       const response: UserRegistrationResponse = await registerUser(request);
-      console.log('Registration API response:', response);
+      console.log('Registration response:', response);
 
       if (response.success) {
-        console.log('Registration successful');
-        setToken(response.token);
+        console.log('User registration successful');
+        // Automatically log in the user after successful registration
+        await loginUser({ email, password });
       } else {
-        console.log('Registration failed:', response.message);
+        console.log('User registration failed:', response.message);
       }
     } catch (error) {
-      console.log('Registration error:', error.message);
+      console.log('Error occurred during user registration:', error);
     }
   };
 
   return (
-    <>
-      <Text>Registration Form</Text>
+    <View>
       <TextInput
         placeholder="Name"
         value={name}
@@ -53,7 +53,7 @@ const RegistrationForm = () => {
         secureTextEntry
       />
       <Button title="Register" onPress={handleRegistration} />
-    </>
+    </View>
   );
 };
 
