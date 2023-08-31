@@ -8,52 +8,69 @@ const RegistrationScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const { loginUser } = useAuthContext();
 
   const handleRegistration = async () => {
-    console.log('Registration initiated');
     try {
-      const request: UserRegistrationRequest = {
+      setLoading(true);
+      setError('');
+
+      // Create the registration request object
+      const registrationRequest: UserRegistrationRequest = {
         name,
         email,
         password,
       };
 
-      const response: UserRegistrationResponse = await registerUser(request);
-      console.log('Registration response:', response);
+      // Call the registerUser API
+      const registrationResponse: UserRegistrationResponse = await registerUser(registrationRequest);
 
-      if (response.success) {
-        console.log('Registration successful');
-        // Automatically log in the user after successful registration
-        await loginUser({ email, password });
+      if (registrationResponse.success) {
+        // Registration successful, log in the user
+        await loginUser(email, password);
       } else {
-        console.log('Registration failed:', response.message);
+        setError(registrationResponse.message);
       }
     } catch (error) {
-      console.log('Registration error:', error);
+      setError('An error occurred during registration.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View>
       <Text>Registration Screen</Text>
+
       <TextInput
         placeholder="Name"
         value={name}
         onChangeText={setName}
       />
+
       <TextInput
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
       />
+
       <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegistration} />
+
+      {error ? <Text>{error}</Text> : null}
+
+      <Button
+        title={loading ? 'Loading...' : 'Register'}
+        onPress={handleRegistration}
+        disabled={loading}
+      />
     </View>
   );
 };
