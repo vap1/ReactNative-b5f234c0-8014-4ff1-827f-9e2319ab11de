@@ -11,15 +11,24 @@ const ProfileScreen: React.FC = () => {
     getUserProfile();
   }, []);
 
-  console.log('Rendering ProfileScreen...');
-  
+  if (!user) {
+    console.log('User profile not available.');
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  console.log('User profile:', user);
+
   return (
     <View>
-      <Text>Name: {user?.name}</Text>
-      <Text>Email: {user?.email}</Text>
-      <Text>Contact Info: {user?.contactInfo}</Text>
-      <Text>Address: {user?.address}</Text>
-      <Text>Profile Picture: {user?.profilePicture}</Text>
+      <Text>Name: {user.name}</Text>
+      <Text>Email: {user.email}</Text>
+      <Text>Contact Info: {user.contactInfo}</Text>
+      <Text>Address: {user.address}</Text>
+      <Text>Profile Picture: {user.profilePicture}</Text>
     </View>
   );
 };
