@@ -1,22 +1,26 @@
 
 import React, { useEffect, useContext } from 'react';
 import { View, Text } from 'react-native';
-import { UserContext, User, AdminUserDetailsRequest } from '../contexts/UserContext';
+import { UserContext } from '../contexts/UserContext';
 import { getUsers, UserContextProps } from '../apis/AdminApi';
 
 const AdminUserDetailsScreen: React.FC = () => {
-  const { users, getUsers } = useContext<UserContextProps>(UserContext);
+  const { users, setUsers }: UserContextProps = useContext(UserContext);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const request: AdminUserDetailsRequest = {
-          token: 'your_admin_token_here',
-        };
-        const response = await getUsers(request);
-        console.log('User Details:', response.users);
+        const response = await getUsers();
+        console.log('API Response:', response);
+
+        if (response.success) {
+          setUsers(response.users);
+          console.log('Users:', response.users);
+        } else {
+          console.log('Error:', response.message);
+        }
       } catch (error) {
-        console.error('Error fetching user details:', error);
+        console.log('Error:', error);
       }
     };
 
@@ -26,7 +30,8 @@ const AdminUserDetailsScreen: React.FC = () => {
   return (
     <View>
       <Text>Admin User Details</Text>
-      {users.map((user: User) => (
+      {/* Render the list of users */}
+      {users.map((user) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
           <Text>Email: {user.email}</Text>
