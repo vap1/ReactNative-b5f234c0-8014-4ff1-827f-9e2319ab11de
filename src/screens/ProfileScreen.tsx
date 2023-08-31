@@ -1,54 +1,48 @@
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { UserContext, UserProfileResponse, UserProfileUpdateRequest, updateUserProfile } from '../contexts/UserContext';
+import { useUserContext } from '../contexts/UserContext';
+import { getUserProfile, updateUserProfile, UserProfileResponse, UserProfileUpdateRequest } from '../apis/ProfileApi';
+import { User } from '../types/Types';
 
 const ProfileScreen: React.FC = () => {
-  const { user, setUser, getUserProfile } = useContext(UserContext);
+  const { user, setUser } = useUserContext();
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');
 
   useEffect(() => {
-    console.log('Fetching user profile...');
+    // Fetch user profile on component mount
     getUserProfile()
       .then((response: UserProfileResponse) => {
         console.log('User profile fetched:', response);
-        if (response) {
-          setName(response.name);
-          setContactInfo(response.contactInfo);
-          setAddress(response.address);
-        }
+        setUser(response.user);
+        setName(response.user.name);
+        setContactInfo(response.user.contactInfo);
+        setAddress(response.user.address);
+        setProfilePicture(response.user.profilePicture);
       })
-      .catch((error: Error) => {
-        console.log('Error fetching user profile:', error.message);
+      .catch((error: any) => {
+        console.error('Error fetching user profile:', error);
       });
   }, []);
 
   const handleSaveChanges = () => {
-    console.log('Saving changes...');
     const updatedProfile: UserProfileUpdateRequest = {
       name,
       contactInfo,
       address,
+      profilePicture,
     };
 
     updateUserProfile(updatedProfile)
-      .then((response: boolean) => {
-        console.log('Profile update response:', response);
-        if (response) {
-          console.log('Changes saved successfully.');
-          // Update the user context with the updated profile
-          setUser((prevUser: UserProfileResponse | null) => ({
-            ...prevUser,
-            name,
-            contactInfo,
-            address,
-          }));
-        }
+      .then((response) => {
+        console.log('User profile updated:', response);
+        setUser({ ...user, ...updatedProfile });
       })
-      .catch((error: Error) => {
-        console.log('Error saving changes:', error.message);
+      .catch((error: any) => {
+        console.error('Error updating user profile:', error);
       });
   };
 
@@ -62,6 +56,9 @@ const ProfileScreen: React.FC = () => {
 
       <Text>Address:</Text>
       <TextInput value={address} onChangeText={setAddress} />
+
+      <Text>Profile Picture:</Text>
+      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
 
       <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
