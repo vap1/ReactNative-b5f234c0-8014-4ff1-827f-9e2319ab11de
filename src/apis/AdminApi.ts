@@ -1,42 +1,42 @@
 
-import { AdminUserDetailsRequest, AdminUserDetailsResponse } from '../types/Types';
+import { AdminUserDetailsRequest, AdminUserDetailsResponse, User } from '../types/Types';
 
-const getAdminUserDetails = async (request: AdminUserDetailsRequest): Promise<AdminUserDetailsResponse> => {
+export const getAdminUserDetails = async (request: AdminUserDetailsRequest): Promise<AdminUserDetailsResponse> => {
   try {
-    console.log('Calling getAdminUserDetails API');
-    console.log('Request:', request);
+    // Log the get admin user details request
+    console.log('Get admin user details request:', request);
 
-    // Simulating API call and generating random data
-    const users = generateRandomUsers();
+    // Generate random user details
+    const users: User[] = [
+      {
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        contactInfo: '1234567890',
+        address: '123 Main St',
+        profilePicture: 'https://example.com/profile1.jpg',
+      },
+      {
+        name: 'Jane Smith',
+        email: 'janesmith@example.com',
+        contactInfo: '9876543210',
+        address: '456 Elm St',
+        profilePicture: 'https://example.com/profile2.jpg',
+      },
+    ];
 
-    console.log('API Response:', users);
-
-    return { users };
-  } catch (error) {
-    console.error('Error in getAdminUserDetails API:', error);
-    throw error;
-  }
-};
-
-const generateRandomUsers = () => {
-  // Generate random user data
-  const users = [];
-
-  for (let i = 0; i < 10; i++) {
-    const user = {
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      contactInfo: `Contact Info ${i + 1}`,
-      address: `Address ${i + 1}`,
-      profilePicture: `https://example.com/profile${i + 1}.jpg`,
+    // Create a random response
+    const response: AdminUserDetailsResponse = {
+      users,
     };
 
-    users.push(user);
+    // Log the get admin user details response
+    console.log('Get admin user details response:', response);
+
+    return response;
+  } catch (error) {
+    // Log any errors that occur during get admin user details
+    console.error('Get admin user details error:', error);
+
+    throw error;
   }
-
-  return users;
-};
-
-export default {
-  getAdminUserDetails,
 };
