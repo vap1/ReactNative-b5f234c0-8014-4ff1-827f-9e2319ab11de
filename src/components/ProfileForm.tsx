@@ -1,24 +1,22 @@
 
-import React, { useState, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, TextInput, Button, Alert } from 'react-native';
-import { UserContext } from '../contexts/UserContext';
-import { updateUserProfile, UserProfileUpdateRequest } from '../apis/ProfileUpdateApi';
-import { UserProfileResponse } from '../types/Types';
+import { UserContext, UserProfileUpdateRequest } from '../contexts/UserContext';
+import { updateUserProfile } from '../apis/ProfileUpdateApi';
 
 const ProfileForm: React.FC = () => {
   const { user, setUser } = useContext(UserContext);
-  const [name, setName] = useState<string>(user?.name || '');
-  const [contactInfo, setContactInfo] = useState<string>(user?.contactInfo || '');
-  const [address, setAddress] = useState<string>(user?.address || '');
-  const [profilePicture, setProfilePicture] = useState<string>(user?.profilePicture || '');
+  const [name, setName] = useState(user.name);
+  const [contactInfo, setContactInfo] = useState(user.contactInfo);
+  const [address, setAddress] = useState(user.address);
+  const [profilePicture, setProfilePicture] = useState(user.profilePicture);
 
   const handleSaveChanges = async () => {
     try {
-      // Log: Saving changes to user profile
-      console.log('Saving changes to user profile');
+      // Log: Saving profile changes
+      console.log('Saving profile changes...');
 
       const request: UserProfileUpdateRequest = {
-        token: user?.token || '',
         name,
         contactInfo,
         address,
@@ -28,55 +26,59 @@ const ProfileForm: React.FC = () => {
       const response = await updateUserProfile(request);
 
       if (response.success) {
-        // Log: Profile update successful
-        console.log('Profile update successful');
+        // Log: Profile changes saved successfully
+        console.log('Profile changes saved successfully.');
 
-        const updatedUser: UserProfileResponse = {
-          name,
-          contactInfo,
-          address,
-          profilePicture,
-          user: user?.user,
-        };
+        // Update the user context with the updated profile
+        setUser(response.user);
 
-        setUser(updatedUser);
-        Alert.alert('Success', 'Profile updated successfully');
+        // Show success message to the user
+        Alert.alert('Success', 'Profile changes saved successfully.');
       } else {
-        // Log: Profile update failed
-        console.log('Profile update failed');
+        // Log: Failed to save profile changes
+        console.log('Failed to save profile changes.');
 
-        Alert.alert('Error', response.message);
+        // Show error message to the user
+        Alert.alert('Error', 'Failed to save profile changes. Please try again.');
       }
     } catch (error) {
-      // Log: Error updating profile
-      console.error('Error updating profile', error);
+      // Log: Error while saving profile changes
+      console.error('Error while saving profile changes:', error);
 
-      Alert.alert('Error', 'An error occurred while updating the profile');
+      // Show error message to the user
+      Alert.alert('Error', 'An error occurred while saving profile changes. Please try again.');
     }
   };
 
   return (
     <View>
+      {/* Log: Rendering profile form */}
+      {console.log('Rendering profile form...')}
+
       <TextInput
         value={name}
         onChangeText={setName}
         placeholder="Name"
       />
+
       <TextInput
         value={contactInfo}
         onChangeText={setContactInfo}
         placeholder="Contact Info"
       />
+
       <TextInput
         value={address}
         onChangeText={setAddress}
         placeholder="Address"
       />
+
       <TextInput
         value={profilePicture}
         onChangeText={setProfilePicture}
         placeholder="Profile Picture"
       />
+
       <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
