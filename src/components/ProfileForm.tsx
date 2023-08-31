@@ -1,15 +1,15 @@
 
 import React, { useContext, useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
-import { UserContext } from '../contexts/UserContext';
+import { View, TextInput, Button, Alert } from 'react-native';
 import { updateUserProfile, UserProfileUpdateRequest } from '../apis/ProfileUpdateApi';
+import { UserContext } from '../contexts/UserContext';
 import { User } from '../types/Types';
 
 const ProfileForm: React.FC = () => {
   const { user, setUser } = useContext(UserContext);
-  const [name, setName] = useState(user.name);
-  const [contactInfo, setContactInfo] = useState(user.contactInfo);
-  const [address, setAddress] = useState(user.address);
+  const [name, setName] = useState<string>(user.name);
+  const [contactInfo, setContactInfo] = useState<string>(user.contactInfo);
+  const [address, setAddress] = useState<string>(user.address);
 
   const handleSaveChanges = async () => {
     try {
@@ -26,33 +26,41 @@ const ProfileForm: React.FC = () => {
 
       if (response.success) {
         // Update the user context with the updated profile
-        setUser({
+        const updatedUser: User = {
           ...user,
           name,
           contactInfo,
           address,
-        });
+        };
+        setUser(updatedUser);
 
-        console.log('Profile updated successfully');
+        Alert.alert('Success', response.message);
       } else {
-        console.log('Failed to update profile:', response.message);
+        Alert.alert('Error', response.message);
       }
     } catch (error) {
-      console.log('Error updating profile:', error.message);
+      console.error('Error updating user profile:', error);
+      Alert.alert('Error', 'Failed to update user profile. Please try again later.');
     }
   };
 
   return (
     <View>
-      <Text>Name:</Text>
-      <TextInput value={name} onChangeText={setName} />
-
-      <Text>Contact Info:</Text>
-      <TextInput value={contactInfo} onChangeText={setContactInfo} />
-
-      <Text>Address:</Text>
-      <TextInput value={address} onChangeText={setAddress} />
-
+      <TextInput
+        value={name}
+        onChangeText={setName}
+        placeholder="Name"
+      />
+      <TextInput
+        value={contactInfo}
+        onChangeText={setContactInfo}
+        placeholder="Contact Info"
+      />
+      <TextInput
+        value={address}
+        onChangeText={setAddress}
+        placeholder="Address"
+      />
       <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
