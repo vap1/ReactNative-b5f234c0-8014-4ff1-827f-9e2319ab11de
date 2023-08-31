@@ -1,21 +1,26 @@
 
 import React, { useEffect, useContext } from 'react';
 import { View, Text } from 'react-native';
-import { UserContext } from '../contexts/UserContext';
-import { getUsers, User } from '../apis/AdminApi';
+import { UserContext, User, AdminUserDetailsRequest } from '../contexts/UserContext';
+import { getUsers, UserContextProps } from '../apis/AdminApi';
 
 const AdminUserDetailsScreen: React.FC = () => {
-  const { users, getUsers } = useContext(UserContext);
+  const { users, getUsers } = useContext<UserContextProps>(UserContext);
 
   useEffect(() => {
-    console.log('Fetching user details...');
-    getUsers()
-      .then((response) => {
-        console.log('User details fetched successfully:', response);
-      })
-      .catch((error) => {
-        console.log('Error fetching user details:', error);
-      });
+    const fetchUsers = async () => {
+      try {
+        const request: AdminUserDetailsRequest = {
+          token: 'your_admin_token_here',
+        };
+        const response = await getUsers(request);
+        console.log('User Details:', response.users);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   return (
