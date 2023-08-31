@@ -24,7 +24,7 @@ const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileR
       user: userProfile,
     };
   } catch (error) {
-    // Log and handle any errors
+    // Log the error
     console.error('Error in getUserProfile API:', error);
 
     // Return an error response
