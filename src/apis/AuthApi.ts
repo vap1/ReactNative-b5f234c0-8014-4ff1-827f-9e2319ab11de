@@ -1,32 +1,31 @@
 
 import { UserLoginRequest, UserLoginResponse } from '../types/Types';
 
-export const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> => {
+const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> => {
   try {
-    // Log the login request
-    console.log('Login request:', request);
+    // Log the request details
+    console.log('Login API Request:', request);
 
-    // Generate a random success status
-    const success = Math.random() < 0.5;
-
-    // Generate a random message
-    const message = success ? 'User login successful' : 'User login failed';
-
-    // Create a random response
+    // Generate random data for the response
     const response: UserLoginResponse = {
-      success,
-      message,
-      token: success ? 'randomToken123' : undefined,
+      success: true,
+      message: 'Login successful',
+      token: 'random_token',
     };
 
-    // Log the login response
-    console.log('Login response:', response);
+    // Log the response details
+    console.log('Login API Response:', response);
 
     return response;
   } catch (error) {
-    // Log any errors that occur during login
-    console.error('Login error:', error);
+    // Log any errors
+    console.error('Login API Error:', error);
 
+    // Throw the error for error handling in the calling code
     throw error;
   }
+};
+
+export default {
+  loginUser,
 };
