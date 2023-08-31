@@ -1,54 +1,48 @@
 
-import React, { createContext, useState, useEffect } from 'react';
-import { User, UserProfileRequest, UserProfileResponse } from '../types/Types';
+import React, { createContext, useState } from 'react';
+import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 import { getUserProfile } from '../apis/ProfileApi';
 
 interface UserContextProps {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-  fetchUserProfile: () => void;
+  userProfile: UserProfileResponse | null;
+  fetchUserProfile: (token: string) => Promise<void>;
 }
 
 export const UserContext = createContext<UserContextProps>({
-  user: null,
-  loading: false,
-  error: null,
-  fetchUserProfile: () => {},
+  userProfile: null,
+  fetchUserProfile: async () => {},
 });
 
-export const UserProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+const UserContextProvider: React.FC = ({ children }) => {
+  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (token: string) => {
     try {
-      setLoading(true);
-      setError(null);
+      // Log the fetch user profile request
+      console.log('Fetch user profile request:', { token });
 
-      // Make API call to fetch user profile
-      const userProfileRequest: UserProfileRequest = {
-        token: 'YOUR_JWT_TOKEN',
-      };
-      const userProfileResponse: UserProfileResponse = await getUserProfile(userProfileRequest);
+      // Make the API call to fetch user profile
+      const request: UserProfileRequest = { token };
+      const response: UserProfileResponse = await getUserProfile(request);
 
-      // Update user state with the fetched profile
-      setUser(userProfileResponse.user);
+      // Log the fetch user profile response
+      console.log('Fetch user profile response:', response);
+
+      // Update the user profile if successful
+      if (response.user) {
+        setUserProfile(response);
+      }
     } catch (error) {
-      setError('Failed to fetch user profile');
-    } finally {
-      setLoading(false);
+      // Log any errors that occur during fetch user profile
+      console.error('Fetch user profile error:', error);
     }
   };
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
   return (
-    <UserContext.Provider value={{ user, loading, error, fetchUserProfile }}>
+    <UserContext.Provider value={{ userProfile, fetchUserProfile }}>
       {children}
     </UserContext.Provider>
   );
 };
+
+export default UserContextProvider;
