@@ -1,5 +1,5 @@
 
-interface User {
+export interface User {
   name: string;
   email: string;
   contactInfo?: string;
@@ -7,37 +7,37 @@ interface User {
   profilePicture?: string;
 }
 
-interface UserRegistrationRequest {
+export interface UserRegistrationRequest {
   name: string;
   email: string;
   password: string;
 }
 
-interface UserRegistrationResponse {
+export interface UserRegistrationResponse {
   success: boolean;
   message: string;
 }
 
-interface UserLoginRequest {
+export interface UserLoginRequest {
   email: string;
   password: string;
 }
 
-interface UserLoginResponse {
+export interface UserLoginResponse {
   success: boolean;
   message: string;
   token?: string;
 }
 
-interface UserProfileRequest {
+export interface UserProfileRequest {
   token: string;
 }
 
-interface UserProfileResponse {
+export interface UserProfileResponse {
   user: User;
 }
 
-interface UserProfileUpdateRequest {
+export interface UserProfileUpdateRequest {
   token: string;
   name?: string;
   contactInfo?: string;
@@ -45,29 +45,15 @@ interface UserProfileUpdateRequest {
   profilePicture?: string;
 }
 
-interface UserProfileUpdateResponse {
+export interface UserProfileUpdateResponse {
   success: boolean;
   message: string;
 }
 
-interface AdminUserDetailsRequest {
+export interface AdminUserDetailsRequest {
   token: string;
 }
 
-interface AdminUserDetailsResponse {
+export interface AdminUserDetailsResponse {
   users: User[];
 }
-
-export {
-  User,
-  UserRegistrationRequest,
-  UserRegistrationResponse,
-  UserLoginRequest,
-  UserLoginResponse,
-  UserProfileRequest,
-  UserProfileResponse,
-  UserProfileUpdateRequest,
-  UserProfileUpdateResponse,
-  AdminUserDetailsRequest,
-  AdminUserDetailsResponse,
-};
