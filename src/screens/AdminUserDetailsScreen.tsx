@@ -1,40 +1,22 @@
 
-import React, { useEffect, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { AdminUserDetailsRequest, AdminUserDetailsResponse } from '../types/Types';
-import { getAdminUserDetails } from '../apis/AdminApi';
 
 const AdminUserDetailsScreen: React.FC = () => {
-  const { users, setUsers } = useContext(UserContext);
+  const { users, getUsers } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchAdminUserDetails = async () => {
-      try {
-        // Step 1: Create the request object
-        const request: AdminUserDetailsRequest = {
-          token: 'your_admin_token',
-        };
-
-        // Step 2: Make the API call to get admin user details
-        const response: AdminUserDetailsResponse = await getAdminUserDetails(request);
-
-        // Step 3: Update the user context with the received user details
-        setUsers(response.users);
-
-        console.log('Admin User Details:', response.users);
-      } catch (error) {
-        console.error('Error fetching admin user details:', error);
-      }
-    };
-
-    fetchAdminUserDetails();
+    console.log('Fetching user details...');
+    getUsers();
   }, []);
 
+  console.log('Rendering AdminUserDetailsScreen...');
+  
   return (
     <View>
-      <Text>Admin User Details:</Text>
-      {users.map((user) => (
+      <Text>Admin User Details</Text>
+      {users.map((user: any) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
           <Text>Email: {user.email}</Text>
