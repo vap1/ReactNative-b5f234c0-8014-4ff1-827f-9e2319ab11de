@@ -15,11 +15,9 @@ const registerUser = async (request: UserRegistrationRequest): Promise<UserRegis
     // Return the response
     return { success, message };
   } catch (error) {
-    // Log the error
+    // Log and throw any errors
     console.error('Error registering user:', error);
-
-    // Return an error response
-    return { success: false, message: 'An error occurred during user registration' };
+    throw error;
   }
 };
 
