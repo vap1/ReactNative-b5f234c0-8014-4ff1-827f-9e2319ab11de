@@ -1,65 +1,52 @@
 
-import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, TextInput, Button, Text } from 'react-native';
+import { UserContext, UserProfileUpdateRequest } from '../contexts/UserContext';
 import { updateUserProfile } from '../apis/ProfileUpdateApi';
-import { UserContext } from '../contexts/UserContext';
-import { UserProfileUpdateRequest } from '../types/Types';
 
 const ProfileForm: React.FC = () => {
   const { user, setUser } = useContext(UserContext);
-  const [name, setName] = useState(user.name);
-  const [contactInfo, setContactInfo] = useState(user.contactInfo);
-  const [address, setAddress] = useState(user.address);
+  const [name, setName] = useState<string>(user?.name || '');
+  const [contactInfo, setContactInfo] = useState<string>(user?.contactInfo || '');
+  const [address, setAddress] = useState<string>(user?.address || '');
+  const [profilePicture, setProfilePicture] = useState<string>(user?.profilePicture || '');
 
   const handleSaveChanges = async () => {
     try {
-      // Prepare the request payload
       const request: UserProfileUpdateRequest = {
-        token: user.token,
+        token: user?.token || '',
         name,
         contactInfo,
         address,
+        profilePicture,
       };
 
-      // Make the API call to update the user profile
       const response = await updateUserProfile(request);
-
       if (response.success) {
-        // Update the user context with the updated profile information
-        setUser({
-          ...user,
-          name,
-          contactInfo,
-          address,
-        });
-
-        Alert.alert('Success', response.message);
+        setUser({ ...user, name, contactInfo, address, profilePicture });
+        console.log('Profile updated successfully');
       } else {
-        Alert.alert('Error', response.message);
+        console.log('Failed to update profile:', response.message);
       }
     } catch (error) {
-      console.error('Error updating user profile:', error);
-      Alert.alert('Error', 'Failed to update user profile. Please try again later.');
+      console.log('Error updating profile:', error);
     }
   };
 
   return (
     <View>
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        placeholder="Name"
-      />
-      <TextInput
-        value={contactInfo}
-        onChangeText={setContactInfo}
-        placeholder="Contact Info"
-      />
-      <TextInput
-        value={address}
-        onChangeText={setAddress}
-        placeholder="Address"
-      />
+      <Text>Name:</Text>
+      <TextInput value={name} onChangeText={setName} />
+
+      <Text>Contact Info:</Text>
+      <TextInput value={contactInfo} onChangeText={setContactInfo} />
+
+      <Text>Address:</Text>
+      <TextInput value={address} onChangeText={setAddress} />
+
+      <Text>Profile Picture:</Text>
+      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
+
       <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
