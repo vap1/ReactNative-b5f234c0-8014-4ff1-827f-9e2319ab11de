@@ -4,7 +4,7 @@ import { UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateRespons
 import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
 
 interface UserContextProps {
-  user: UserProfileResponse | null;
+  userProfile: UserProfileResponse | null;
   loading: boolean;
   error: string | null;
   getUserProfile: () => void;
@@ -12,7 +12,7 @@ interface UserContextProps {
 }
 
 export const UserContext = createContext<UserContextProps>({
-  user: null,
+  userProfile: null,
   loading: false,
   error: null,
   getUserProfile: () => {},
@@ -20,7 +20,7 @@ export const UserContext = createContext<UserContextProps>({
 });
 
 export const UserProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<UserProfileResponse | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,12 +34,12 @@ export const UserProvider: React.FC = ({ children }) => {
 
     getUserProfile()
       .then((response) => {
-        setUser(response.user);
         setLoading(false);
+        setUserProfile(response.user);
       })
       .catch((error) => {
-        setError('Failed to fetch user profile');
         setLoading(false);
+        setError(error.message);
       });
   };
 
@@ -49,21 +49,27 @@ export const UserProvider: React.FC = ({ children }) => {
 
     return updateUserProfile(request)
       .then((response) => {
-        if (response.success) {
-          getUserProfile();
-        }
         setLoading(false);
+        setUserProfile(response.user);
         return response;
       })
       .catch((error) => {
-        setError('Failed to update user profile');
         setLoading(false);
-        return { success: false, message: '' };
+        setError(error.message);
+        return { success: false, message: error.message };
       });
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, error, getUserProfile, updateUserProfile }}>
+    <UserContext.Provider
+      value={{
+        userProfile,
+        loading,
+        error,
+        getUserProfile,
+        updateUserProfile,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
