@@ -21,7 +21,7 @@ const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<Use
     // Handle any errors
     console.error('Error updating user profile:', error);
 
-    // Generate random error message for the response
+    // Generate error response
     const response: UserProfileUpdateResponse = {
       success: false,
       message: 'Failed to update user profile.',
