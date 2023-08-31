@@ -41,21 +41,12 @@ const App = () => {
     <NavigationContainer>
       {isLoggedIn ? (
         isAdmin ? (
-          <>
-            {console.log('User is an admin')}
-            <AppStack />
-          </>
+          <AppStack />
         ) : (
-          <>
-            {console.log('User is not an admin')}
-            <ProfileScreen />
-          </>
+          <ProfileScreen />
         )
       ) : (
-        <>
-          {console.log('User is not logged in')}
-          <AuthStack />
-        </>
+        <AuthStack />
       )}
     </NavigationContainer>
   );
