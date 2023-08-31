@@ -12,45 +12,37 @@ import AdminUserDetailsScreen from '../screens/AdminUserDetailsScreen';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const AuthStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
-    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-  </Stack.Navigator>
-);
+const AuthStack = () => {
+  console.log('Rendering AuthStack');
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+};
 
-const AppStack = () => (
-  <Tab.Navigator>
-    <Tab.Screen name="Profile" component={ProfileScreen} />
-    <Tab.Screen name="Admin User Details" component={AdminUserDetailsScreen} />
-  </Tab.Navigator>
-);
+const AppStack = () => {
+  console.log('Rendering AppStack');
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Admin User Details" component={AdminUserDetailsScreen} />
+    </Tab.Navigator>
+  );
+};
 
 const AppNavigator = () => {
+  console.log('Rendering AppNavigator');
   const isLoggedIn = false; // Check if the user is logged in
   const isAdmin = false; // Check if the user is an admin
-
-  console.log('AppNavigator - Start');
 
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        isAdmin ? (
-          <>
-            {console.log('AppNavigator - Admin User')}
-            <AppStack />
-          </>
-        ) : (
-          <>
-            {console.log('AppNavigator - Logged In User')}
-            <ProfileScreen />
-          </>
-        )
+        isAdmin ? <AppStack /> : <ProfileScreen />
       ) : (
-        <>
-          {console.log('AppNavigator - Guest User')}
-          <AuthStack />
-        </>
+        <AuthStack />
       )}
     </NavigationContainer>
   );
