@@ -1,7 +1,7 @@
 
 import { UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
 
-const updateProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
+const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
   try {
     // Log the request details
     console.log('Updating user profile...');
@@ -31,4 +31,4 @@ const updateProfile = async (request: UserProfileUpdateRequest): Promise<UserPro
   }
 };
 
-export default updateProfile;
+export default updateUserProfile;
