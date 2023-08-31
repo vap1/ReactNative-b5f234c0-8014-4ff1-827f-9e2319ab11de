@@ -21,20 +21,17 @@ export const AuthProvider: React.FC = ({ children }) => {
   // Step 3: Implement the login function
   const login = async (email: string, password: string) => {
     try {
-      // Step 4: Make the API call to login
-      const request: UserLoginRequest = { email, password };
-      const response = await loginUser(request);
+      // Step 4: Call the loginUser API function
+      const response = await loginUser({ email, password });
 
-      // Step 5: Update the user state
+      // Step 5: Update the user state with the response
       setUser(response);
-
-      console.log('Login successful');
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Error logging in:', error);
     }
   };
 
-  // Step 6: Provide the context value to the children components
+  // Step 6: Provide the AuthContext value to the children components
   return (
     <AuthContext.Provider value={{ user, login }}>
       {children}
