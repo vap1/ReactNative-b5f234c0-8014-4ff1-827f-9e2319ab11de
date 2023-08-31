@@ -7,23 +7,22 @@ import { useAuthContext } from '../contexts/AuthContext';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken } = useAuthContext();
+  const { setLoggedIn } = useAuthContext();
 
   const handleLogin = async () => {
-    console.log('Login button clicked');
+    console.log('Logging in...');
     try {
       const request: UserLoginRequest = {
         email,
         password,
       };
 
-      console.log('Sending login request:', request);
       const response: UserLoginResponse = await loginUser(request);
+      console.log('Login response:', response);
 
-      console.log('Received login response:', response);
       if (response.success) {
-        setToken(response.token);
-        console.log('Login successful');
+        setLoggedIn(true);
+        console.log('User logged in successfully.');
       } else {
         console.log('Login failed:', response.message);
       }
@@ -34,18 +33,21 @@ const LoginScreen = () => {
 
   return (
     <View>
-      <Text>Login Screen</Text>
+      <Text>Email:</Text>
       <TextInput
-        placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        placeholder="Enter your email"
       />
+
+      <Text>Password:</Text>
       <TextInput
-        placeholder="Password"
         value={password}
         onChangeText={setPassword}
+        placeholder="Enter your password"
         secureTextEntry
       />
+
       <Button title="Login" onPress={handleLogin} />
     </View>
   );
