@@ -12,7 +12,7 @@ const registerUser = async (request: UserRegistrationRequest): Promise<UserRegis
     // Generate a random message
     const message = success ? 'User registration successful' : 'User registration failed';
 
-    // Return the response
+    // Return the random response
     return { success, message };
   } catch (error) {
     // Log the error
