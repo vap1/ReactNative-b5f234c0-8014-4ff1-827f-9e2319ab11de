@@ -18,14 +18,9 @@ const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<Use
 
     return response;
   } catch (error) {
-    // Log any errors
+    // Handle any errors
     console.error('Error updating user profile:', error);
-
-    // Return an error response
-    return {
-      success: false,
-      message: 'Failed to update user profile.',
-    };
+    throw error;
   }
 };
 
