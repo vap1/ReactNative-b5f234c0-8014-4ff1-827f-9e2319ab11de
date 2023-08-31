@@ -1,42 +1,48 @@
 
 import { AdminUserDetailsRequest, AdminUserDetailsResponse, User } from '../types/Types';
 
+// Function to generate random user data
+const generateRandomUserData = (): User => {
+  // Generate random user details
+  const user: User = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    contactInfo: '1234567890',
+    address: '123 Main St',
+    profilePicture: 'https://example.com/profile.jpg',
+  };
+
+  return user;
+};
+
+// Function to get admin user details
 export const getAdminUserDetails = async (request: AdminUserDetailsRequest): Promise<AdminUserDetailsResponse> => {
   try {
-    // Log the get admin user details request
-    console.log('Get admin user details request:', request);
+    // Log the request details
+    console.log('Admin User Details Request:', request);
 
-    // Generate random user details
-    const users: User[] = [
-      {
-        name: 'John Doe',
-        email: 'johndoe@example.com',
-        contactInfo: '1234567890',
-        address: '123 Main St',
-        profilePicture: 'https://example.com/profile1.jpg',
-      },
-      {
-        name: 'Jane Smith',
-        email: 'janesmith@example.com',
-        contactInfo: '9876543210',
-        address: '456 Elm St',
-        profilePicture: 'https://example.com/profile2.jpg',
-      },
-    ];
+    // Generate random user data
+    const users: User[] = [];
+    for (let i = 0; i < 10; i++) {
+      const user = generateRandomUserData();
+      users.push(user);
+    }
 
-    // Create a random response
-    const response: AdminUserDetailsResponse = {
+    // Log the response details
+    console.log('Admin User Details Response:', users);
+
+    // Return the response
+    return {
       users,
     };
-
-    // Log the get admin user details response
-    console.log('Get admin user details response:', response);
-
-    return response;
   } catch (error) {
-    // Log any errors that occur during get admin user details
-    console.error('Get admin user details error:', error);
+    // Log any errors
+    console.error('Error in getting admin user details:', error);
 
-    throw error;
+    // Return an error response
+    return {
+      users: [],
+      error: 'Failed to get admin user details',
+    };
   }
 };
