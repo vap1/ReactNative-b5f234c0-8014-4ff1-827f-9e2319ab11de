@@ -1,21 +1,27 @@
 
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text } from 'react-native';
 import { UserContext, User } from '../contexts/UserContext';
 import { getUsers, UserContextProps } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
-  const { users, getUsers } = useContext<UserContextProps>(UserContext);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { users, setUsers }: UserContextProps = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
         const response = await getUsers();
-        console.log('User List API Response:', response);
+        console.log('API Response:', response);
+        if (response.success) {
+          setUsers(response.users);
+          console.log('Users:', response.users);
+        } else {
+          console.log('Error:', response.message);
+        }
       } catch (error) {
-        console.error('Error fetching user list:', error);
+        console.log('Error:', error.message);
       } finally {
         setLoading(false);
       }
@@ -29,19 +35,17 @@ const UserList: React.FC = () => {
       {loading ? (
         <Text>Loading...</Text>
       ) : (
-        <FlatList
-          data={users}
-          keyExtractor={(user: User) => user.email}
-          renderItem={({ item }: { item: User }) => (
-            <View>
-              <Text>Name: {item.name}</Text>
-              <Text>Email: {item.email}</Text>
-              <Text>Contact Info: {item.contactInfo}</Text>
-              <Text>Address: {item.address}</Text>
-              <Text>Profile Picture: {item.profilePicture}</Text>
+        <View>
+          {users.map((user: User) => (
+            <View key={user.email}>
+              <Text>Name: {user.name}</Text>
+              <Text>Email: {user.email}</Text>
+              <Text>Contact Info: {user.contactInfo}</Text>
+              <Text>Address: {user.address}</Text>
+              <Text>Profile Picture: {user.profilePicture}</Text>
             </View>
-          )}
-        />
+          ))}
+        </View>
       )}
     </View>
   );
