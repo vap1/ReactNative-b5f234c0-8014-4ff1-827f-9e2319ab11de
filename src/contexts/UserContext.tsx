@@ -1,11 +1,11 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import { UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
-import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
+import { updateUserProfile } from '../apis/ProfileUpdateApi';
 
 interface UserContextProps {
   userProfile: UserProfileResponse | null;
-  updateUserProfile: (request: UserProfileUpdateRequest) => Promise<UserProfileUpdateResponse>;
+  updateUserProfile: (updatedProfile: UserProfileUpdateRequest) => Promise<UserProfileUpdateResponse>;
 }
 
 export const UserContext = createContext<UserContextProps>({
@@ -17,35 +17,29 @@ export const UserProvider: React.FC = ({ children }) => {
   const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
-    // Fetch user profile on component mount
+    // Fetch user profile from the API
     const fetchUserProfile = async () => {
       try {
-        const response = await getUserProfile();
-        setUserProfile(response.user);
+        // Make API call to get user profile
+        // const response = await getUserProfile();
+        // setUserProfile(response.user);
+        console.log('Fetching user profile...');
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
+        console.error('Error fetching user profile:', error);
       }
     };
 
     fetchUserProfile();
   }, []);
 
-  const handleUpdateUserProfile = async (request: UserProfileUpdateRequest) => {
+  const handleUpdateUserProfile = async (updatedProfile: UserProfileUpdateRequest) => {
     try {
-      const response = await updateUserProfile(request);
-      if (response.success) {
-        setUserProfile((prevProfile) => ({
-          ...prevProfile,
-          name: request.name || prevProfile?.name,
-          contactInfo: request.contactInfo || prevProfile?.contactInfo,
-          address: request.address || prevProfile?.address,
-          profilePicture: request.profilePicture || prevProfile?.profilePicture,
-        }));
-      }
-      return response;
+      // Make API call to update user profile
+      // const response = await updateUserProfile(updatedProfile);
+      // setUserProfile(response.user);
+      console.log('Updating user profile...');
     } catch (error) {
-      console.error('Failed to update user profile:', error);
-      return { success: false, message: 'Failed to update user profile' };
+      console.error('Error updating user profile:', error);
     }
   };
 
