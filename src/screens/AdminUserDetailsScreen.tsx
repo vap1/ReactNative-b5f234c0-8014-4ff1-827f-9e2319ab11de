@@ -8,17 +8,14 @@ const AdminUserDetailsScreen: React.FC = () => {
   const { users, getUsers } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        console.log('Fetching users...');
-        const response = await getUsers();
-        console.log('Users:', response.users);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-
-    fetchUsers();
+    console.log('Fetching user details...');
+    getUsers()
+      .then((response: User[]) => {
+        console.log('User details fetched successfully:', response);
+      })
+      .catch((error: Error) => {
+        console.log('Error fetching user details:', error);
+      });
   }, []);
 
   return (
