@@ -10,10 +10,10 @@ const AdminUserDetailsScreen: React.FC = () => {
   useEffect(() => {
     console.log('Fetching user details...');
     getUsers()
-      .then((response: User[]) => {
+      .then((response) => {
         console.log('User details fetched successfully:', response);
       })
-      .catch((error: Error) => {
+      .catch((error) => {
         console.log('Error fetching user details:', error);
       });
   }, []);
