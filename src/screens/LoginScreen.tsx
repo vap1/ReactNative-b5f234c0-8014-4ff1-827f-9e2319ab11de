@@ -7,7 +7,7 @@ import { useAuthContext } from '../contexts/AuthContext';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setAuthToken } = useAuthContext();
+  const { setToken } = useAuthContext();
 
   const handleLogin = async () => {
     console.log('Login button clicked');
@@ -16,13 +16,12 @@ const LoginScreen = () => {
         email,
         password,
       };
-
+      console.log('Sending login request:', request);
       const response: UserLoginResponse = await loginUser(request);
-      console.log('Login API response:', response);
-
+      console.log('Received login response:', response);
       if (response.success) {
-        setAuthToken(response.token);
-        console.log('User logged in successfully');
+        setToken(response.token);
+        console.log('Login successful');
       } else {
         console.log('Login failed:', response.message);
       }
