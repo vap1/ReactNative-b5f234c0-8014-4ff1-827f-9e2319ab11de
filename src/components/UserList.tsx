@@ -13,9 +13,9 @@ const UserList: React.FC = () => {
       setIsLoading(true);
       try {
         const response = await getUsers();
-        console.log('User List:', response.users);
+        console.log('User List API Response:', response);
       } catch (error) {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching user list:', error);
       } finally {
         setIsLoading(false);
       }
