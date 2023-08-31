@@ -1,8 +1,9 @@
 
 import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, Image } from 'react-native';
-import { UserContext, UserProfileUpdateRequest } from '../contexts/UserContext';
-import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { View, TextInput, Button, Alert } from 'react-native';
+import { UserContext } from '../contexts/UserContext';
+import { updateUserProfile, UserProfileUpdateRequest } from '../apis/ProfileUpdateApi';
+import { UserProfileResponse } from '../types/Types';
 
 const ProfileForm: React.FC = () => {
   const { user, setUser } = useContext(UserContext);
@@ -30,21 +31,27 @@ const ProfileForm: React.FC = () => {
         // Log: Profile update successful
         console.log('Profile update successful');
 
-        // Update the user context with the updated profile
-        setUser((prevUser) => ({
-          ...prevUser,
+        const updatedUser: UserProfileResponse = {
           name,
           contactInfo,
           address,
           profilePicture,
-        }));
+          user: user?.user,
+        };
+
+        setUser(updatedUser);
+        Alert.alert('Success', 'Profile updated successfully');
       } else {
         // Log: Profile update failed
         console.log('Profile update failed');
+
+        Alert.alert('Error', response.message);
       }
     } catch (error) {
-      // Log: Error while updating profile
-      console.error('Error while updating profile:', error);
+      // Log: Error updating profile
+      console.error('Error updating profile', error);
+
+      Alert.alert('Error', 'An error occurred while updating the profile');
     }
   };
 
@@ -65,14 +72,12 @@ const ProfileForm: React.FC = () => {
         onChangeText={setAddress}
         placeholder="Address"
       />
-      <Image
-        source={{ uri: profilePicture }}
-        style={{ width: 100, height: 100 }}
+      <TextInput
+        value={profilePicture}
+        onChangeText={setProfilePicture}
+        placeholder="Profile Picture"
       />
-      <Button
-        title="Save Changes"
-        onPress={handleSaveChanges}
-      />
+      <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
 };
