@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
+import { registerUser, UserRegistrationRequest, UserRegistrationResponse } from '../apis/UserApi';
 
 const RegistrationScreen = () => {
   const [name, setName] = useState('');
@@ -9,32 +10,32 @@ const RegistrationScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleRegistration = () => {
-    if (!name || !email || !password) {
-      setErrorMessage('Please fill in all fields');
-      return;
-    }
-
+  const handleRegistration = async () => {
     setIsLoading(true);
     setErrorMessage('');
 
-    // Perform API call for user registration
-    // Replace `registerUser` with the actual API call
-    registerUser(name, email, password)
-      .then((response) => {
-        setIsLoading(false);
-        if (response.success) {
-          console.log('Registration successful');
-          // Redirect to the login screen or perform any other necessary action
-        } else {
-          setErrorMessage(response.message);
-        }
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        setErrorMessage('An error occurred. Please try again later.');
-        console.error('Registration error:', error);
-      });
+    try {
+      const request: UserRegistrationRequest = {
+        name,
+        email,
+        password,
+      };
+
+      const response: UserRegistrationResponse = await registerUser(request);
+
+      if (response.success) {
+        console.log('Registration successful');
+        // Redirect to the login screen or perform any other necessary actions
+      } else {
+        console.log('Registration failed:', response.message);
+        setErrorMessage(response.message);
+      }
+    } catch (error) {
+      console.log('Error during registration:', error.message);
+      setErrorMessage('An error occurred during registration');
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -56,12 +57,12 @@ const RegistrationScreen = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      {errorMessage ? <Text>{errorMessage}</Text> : null}
       <Button
         title={isLoading ? 'Loading...' : 'Register'}
         onPress={handleRegistration}
         disabled={isLoading}
       />
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
     </View>
   );
 };
