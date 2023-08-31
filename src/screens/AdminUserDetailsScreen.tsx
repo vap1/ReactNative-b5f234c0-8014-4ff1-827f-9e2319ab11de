@@ -12,7 +12,7 @@ const AdminUserDetailsScreen: React.FC = () => {
   }, []);
 
   console.log('Rendering AdminUserDetailsScreen...');
-  
+
   return (
     <View>
       <Text>Admin User Details</Text>
