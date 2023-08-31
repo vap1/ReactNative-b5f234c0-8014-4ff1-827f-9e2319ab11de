@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { View, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
 
@@ -12,11 +12,11 @@ const AdminUserDetailsScreen: React.FC = () => {
   }, []);
 
   console.log('Rendering AdminUserDetailsScreen...');
-
+  
   return (
     <View>
       <Text>Admin User Details</Text>
-      {users.map((user) => (
+      {users.map((user: any) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
           <Text>Email: {user.email}</Text>
