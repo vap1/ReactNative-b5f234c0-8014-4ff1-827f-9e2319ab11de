@@ -1,39 +1,63 @@
 
-import React, { createContext, useState } from 'react';
-import { loginUser } from '../apis/AuthApi';
-import { UserLoginRequest, UserLoginResponse } from '../types/Types';
-
-// Step 1: Create the AuthContext
-interface AuthContextProps {
-  user: UserLoginResponse | null;
-  login: (email: string, password: string) => Promise<void>;
-}
+import React, { createContext, useState, useEffect } from 'react';
+import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
+import { AuthContextProps, User } from '../types/Types';
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  login: async () => {},
+  token: '',
+  login: () => {},
+  logout: () => {},
 });
 
-// Step 2: Create the AuthProvider component
 export const AuthProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<UserLoginResponse | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState('');
 
-  // Step 3: Implement the login function
+  useEffect(() => {
+    // Check if the user is already logged in
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+      getUserProfile(storedToken);
+    }
+  }, []);
+
   const login = async (email: string, password: string) => {
     try {
-      // Step 4: Call the loginUser API function
-      const response = await loginUser({ email, password });
-
-      // Step 5: Update the user state with the response
-      setUser(response);
+      const request: UserLoginRequest = { email, password };
+      const response: UserLoginResponse = await loginUser(request);
+      if (response.success) {
+        setToken(response.token);
+        localStorage.setItem('token', response.token);
+        getUserProfile(response.token);
+      } else {
+        console.log('Login failed:', response.message);
+      }
     } catch (error) {
-      console.error('Error occurred during login:', error);
+      console.log('Login error:', error);
     }
   };
 
-  // Step 6: Provide the AuthContext value to the children components
+  const logout = () => {
+    setUser(null);
+    setToken('');
+    localStorage.removeItem('token');
+  };
+
+  const getUserProfile = async (token: string) => {
+    try {
+      // Make API call to get user profile
+      // const response = await getUserProfile(token);
+      // setUser(response.user);
+      console.log('getUserProfile API call');
+    } catch (error) {
+      console.log('getUserProfile error:', error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login }}>
+    <AuthContext.Provider value={{ user, token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
