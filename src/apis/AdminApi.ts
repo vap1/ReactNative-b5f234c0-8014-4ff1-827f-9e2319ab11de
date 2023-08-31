@@ -2,38 +2,44 @@
 import { AdminUserDetailsRequest, AdminUserDetailsResponse, User } from '../types/Types';
 
 // Function to generate random user data
-const generateRandomUserData = (): User[] => {
-  // Generate an array of random users
-  const users: User[] = [];
+const generateRandomUserData = (): User => {
+  // Generate random user details
+  const user: User = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    contactInfo: '1234567890',
+    address: '123 Main St',
+    profilePicture: 'https://example.com/profile.jpg',
+  };
 
-  for (let i = 0; i < 10; i++) {
-    const user: User = {
-      name: `User ${i + 1}`,
-      email: `user${i + 1}@example.com`,
-      contactInfo: `Contact Info ${i + 1}`,
-      address: `Address ${i + 1}`,
-      profilePicture: `https://example.com/profiles/user${i + 1}.jpg`,
-    };
-
-    users.push(user);
-  }
-
-  return users;
+  return user;
 };
 
 // Function to get admin user details
-const getAdminUserDetails = (request: AdminUserDetailsRequest): AdminUserDetailsResponse => {
-  console.log('Fetching admin user details...');
+const getAdminUserDetails = async (request: AdminUserDetailsRequest): Promise<AdminUserDetailsResponse> => {
+  try {
+    // Log the request details
+    console.log('Admin User Details Request:', request);
 
-  // Simulate API call delay
-  const delay = Math.floor(Math.random() * 2000) + 1000;
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const users = generateRandomUserData();
-      console.log('Admin user details fetched successfully:', users);
-      resolve({ users });
-    }, delay);
-  });
+    // Generate random user data
+    const users: User[] = [];
+    for (let i = 0; i < 10; i++) {
+      const user = generateRandomUserData();
+      users.push(user);
+    }
+
+    // Log the response details
+    console.log('Admin User Details Response:', users);
+
+    // Return the response
+    return { users };
+  } catch (error) {
+    // Log the error
+    console.error('Error in getting admin user details:', error);
+
+    // Throw the error
+    throw error;
+  }
 };
 
 export default {
