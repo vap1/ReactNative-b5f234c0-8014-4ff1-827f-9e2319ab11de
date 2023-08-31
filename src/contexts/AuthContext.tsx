@@ -3,40 +3,53 @@ import React, { createContext, useState } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
-// Create the AuthContext
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   login: () => {},
   logout: () => {},
 });
 
-// Create the AuthProvider component
-export const AuthProvider: React.FC = ({ children }) => {
+const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<UserLoginResponse | null>(null);
 
-  // Function to handle user login
-  const login = async (request: UserLoginRequest) => {
+  const login = async (email: string, password: string) => {
     try {
-      console.log('Logging in...');
-      const response = await loginUser(request);
-      console.log('Login successful:', response);
+      // Log the login attempt
+      console.log(`Logging in with email: ${email}`);
+
+      // Create the login request
+      const loginRequest: UserLoginRequest = {
+        email,
+        password,
+      };
+
+      // Make the API call to login
+      const response = await loginUser(loginRequest);
+
+      // Log the login response
+      console.log(`Login response: ${JSON.stringify(response)}`);
+
+      // Update the user state
       setUser(response);
     } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
+      // Log any errors that occur during login
+      console.error(`Error during login: ${error.message}`);
     }
   };
 
-  // Function to handle user logout
   const logout = () => {
-    console.log('Logging out...');
+    // Log the logout attempt
+    console.log('Logging out');
+
+    // Clear the user state
     setUser(null);
   };
 
-  // Provide the AuthContext value to the children components
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;
