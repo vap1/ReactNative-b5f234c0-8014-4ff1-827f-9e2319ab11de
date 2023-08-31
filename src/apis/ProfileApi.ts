@@ -16,8 +16,11 @@ export const getUserProfile = async (request: UserProfileRequest): Promise<UserP
       profilePicture: 'https://example.com/profile.jpg',
     };
 
-    // Log the successful API response
-    console.log('User profile fetched successfully.');
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Log the API response
+    console.log('User profile fetched successfully:', userProfile);
 
     // Return the user profile data
     return {
@@ -25,13 +28,13 @@ export const getUserProfile = async (request: UserProfileRequest): Promise<UserP
       user: userProfile,
     };
   } catch (error) {
-    // Log the error
+    // Log the API error
     console.error('Failed to fetch user profile:', error);
 
-    // Return an error response
+    // Return the error response
     return {
       success: false,
-      message: 'Failed to fetch user profile.',
+      message: 'Failed to fetch user profile',
     };
   }
 };
