@@ -29,17 +29,14 @@ const ProfileScreen: React.FC = () => {
       name,
       contactInfo,
       address,
-      profilePicture: '' // Add logic to handle profile picture update
     };
 
     updateUserProfile(updatedProfile)
       .then((response: any) => {
         console.log('Profile updated successfully:', response);
-        // Add logic to show success message to the user
       })
       .catch((error: any) => {
         console.log('Failed to update profile:', error);
-        // Add logic to show error message to the user
       });
   };
 
