@@ -1,42 +1,45 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
-import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Types';
-import { registerUser } from '../apis/UserApi';
+import { View, TextInput, Button, Text } from 'react-native';
 
-const RegistrationScreen: React.FC = () => {
+const RegistrationScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleRegistration = async () => {
-    try {
-      // Log the registration request
-      console.log('Registration request:', { name, email, password });
-
-      // Make the API call to register the user
-      const request: UserRegistrationRequest = { name, email, password };
-      const response: UserRegistrationResponse = await registerUser(request);
-
-      // Log the registration response
-      console.log('Registration response:', response);
-
-      // Handle the registration success or failure
-      if (response.success) {
-        // Registration successful
-        console.log('User registration successful');
-      } else {
-        // Registration failed
-        console.log('User registration failed');
-      }
-    } catch (error) {
-      // Log any errors that occur during registration
-      console.error('Registration error:', error);
+  const handleRegistration = () => {
+    if (!name || !email || !password) {
+      setErrorMessage('Please fill in all fields');
+      return;
     }
+
+    setIsLoading(true);
+    setErrorMessage('');
+
+    // Perform API call for user registration
+    // Replace `registerUser` with the actual API call
+    registerUser(name, email, password)
+      .then((response) => {
+        setIsLoading(false);
+        if (response.success) {
+          console.log('Registration successful');
+          // Redirect to the login screen or perform any other necessary action
+        } else {
+          setErrorMessage(response.message);
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        setErrorMessage('An error occurred. Please try again later.');
+        console.error('Registration error:', error);
+      });
   };
 
   return (
     <View>
+      <Text>Registration Screen</Text>
       <TextInput
         placeholder="Name"
         value={name}
@@ -53,7 +56,12 @@ const RegistrationScreen: React.FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegistration} />
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
+      <Button
+        title={isLoading ? 'Loading...' : 'Register'}
+        onPress={handleRegistration}
+        disabled={isLoading}
+      />
     </View>
   );
 };
