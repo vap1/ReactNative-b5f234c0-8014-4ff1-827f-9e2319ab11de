@@ -3,29 +3,36 @@ import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 
 const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileResponse> => {
   try {
-    // Log the API call
-    console.log('Calling getUserProfile API');
+    console.log('Fetching user profile...');
+    // Make API call to fetch user profile
+    // Replace the following code with your actual API call
+    const response = await fetch('/api/profile', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${request.token}`,
+      },
+    });
 
-    // Generate random user profile data
+    if (!response.ok) {
+      throw new Error('Failed to fetch user profile');
+    }
+
+    // Generate random user profile data for testing
     const userProfile: UserProfileResponse = {
       user: {
         name: 'John Doe',
         email: 'johndoe@example.com',
         contactInfo: '1234567890',
-        address: '123 Main St',
+        address: '123 Main St, City, State',
         profilePicture: 'https://example.com/profile.jpg',
       },
     };
 
-    // Log the response
-    console.log('getUserProfile API response:', userProfile);
-
+    console.log('User profile fetched successfully');
     return userProfile;
   } catch (error) {
-    // Log the error
-    console.error('Error in getUserProfile API:', error);
-
-    // Throw the error
+    console.error('Error fetching user profile:', error.message);
     throw error;
   }
 };
