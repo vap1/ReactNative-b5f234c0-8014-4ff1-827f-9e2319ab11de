@@ -3,6 +3,7 @@ import { UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Ty
 
 const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
   try {
+    // Log the request details
     console.log('Updating user profile...');
     console.log('Request:', request);
 
@@ -12,11 +13,19 @@ const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<Use
       message: 'User profile updated successfully.',
     };
 
+    // Log the response details
     console.log('Response:', response);
+
     return response;
   } catch (error) {
+    // Log any errors
     console.error('Error updating user profile:', error);
-    throw error;
+
+    // Return an error response
+    return {
+      success: false,
+      message: 'Failed to update user profile.',
+    };
   }
 };
 
