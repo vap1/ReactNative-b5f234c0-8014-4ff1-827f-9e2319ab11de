@@ -1,19 +1,25 @@
 
 import React, { useContext, useEffect } from 'react';
 import { View, Text } from 'react-native';
-import { UserContext } from '../contexts/UserContext';
-import { getUsers } from '../apis/AdminApi';
-import { User } from '../types/Types';
+import { UserContext, UserContextProps } from '../contexts/UserContext';
+import { getUsers, User } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
-  const { users, getUsers } = useContext(UserContext);
+  const { users, getUsers }: UserContextProps = useContext(UserContext);
 
   useEffect(() => {
-    console.log('Fetching user list...');
-    getUsers();
+    const fetchUsers = async () => {
+      try {
+        const response = await getUsers();
+        console.log('Fetched users:', response);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
   }, []);
 
-  console.log('Rendering user list...');
   return (
     <View>
       <Text>User List:</Text>
@@ -23,6 +29,7 @@ const UserList: React.FC = () => {
           <Text>Email: {user.email}</Text>
           <Text>Contact Info: {user.contactInfo}</Text>
           <Text>Address: {user.address}</Text>
+          <Text>Profile Picture: {user.profilePicture}</Text>
         </View>
       ))}
     </View>
