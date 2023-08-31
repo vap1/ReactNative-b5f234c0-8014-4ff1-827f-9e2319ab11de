@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,18 +8,17 @@ import RegistrationScreen from './screens/RegistrationScreen';
 import LoginScreen from './screens/LoginScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AdminUserDetailsScreen from './screens/AdminUserDetailsScreen';
-
-import { useAuthContext } from './contexts/AuthContext';
-import { useUserContext } from './contexts/UserContext';
+import { AuthContext } from './contexts/AuthContext';
+import { UserContext } from './contexts/UserContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
-  const { login } = useAuthContext();
+  const { login } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log('Rendering RegistrationScreen');
+    console.log('Rendering AuthStack');
   }, []);
 
   return (
@@ -33,49 +32,37 @@ const AuthStack = () => {
         name="Login"
         component={LoginScreen}
         options={{ headerShown: false }}
-        listeners={({ navigation }) => ({
-          beforeRemove: (e) => {
-            // Prevent going back to the Registration screen after successful login
-            e.preventDefault();
-            navigation.navigate('Profile');
-          },
-        })}
-        initialParams={{ onLogin: login }}
       />
     </Stack.Navigator>
   );
 };
 
 const AppStack = () => {
-  const { isLoggedIn, isAdmin } = useAuthContext();
-  const { getUserProfile } = useUserContext();
+  const { userProfile, fetchUserProfile } = useContext(UserContext);
 
   useEffect(() => {
-    console.log('Rendering ProfileScreen');
-    if (isLoggedIn) {
-      getUserProfile();
-    }
-  }, [isLoggedIn]);
+    console.log('Rendering AppStack');
+  }, []);
 
   useEffect(() => {
-    console.log('Rendering AdminUserDetailsScreen');
-    if (isAdmin) {
-      // Fetch admin user details
+    if (userProfile?.user.token) {
+      fetchUserProfile(userProfile.user.token);
     }
-  }, [isAdmin]);
+  }, [userProfile]);
 
   return (
     <Tab.Navigator>
       <Tab.Screen name="Profile" component={ProfileScreen} />
-      {isAdmin && (
-        <Tab.Screen name="Admin User Details" component={AdminUserDetailsScreen} />
-      )}
+      <Tab.Screen
+        name="Admin User Details"
+        component={AdminUserDetailsScreen}
+      />
     </Tab.Navigator>
   );
 };
 
 const App = () => {
-  const { isLoggedIn } = useAuthContext();
+  const { userToken } = useContext(AuthContext);
 
   useEffect(() => {
     console.log('Rendering App');
@@ -83,7 +70,7 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
+      {userToken ? (
         <AppStack />
       ) : (
         <AuthStack />
