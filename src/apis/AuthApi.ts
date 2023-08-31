@@ -21,7 +21,7 @@ const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> 
     // Log any errors
     console.error('Login API Error:', error);
 
-    // Throw the error for error handling in the calling code
+    // Throw the error for error handling in the calling function
     throw error;
   }
 };
