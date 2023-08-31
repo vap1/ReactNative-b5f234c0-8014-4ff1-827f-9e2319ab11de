@@ -7,23 +7,28 @@ import { useAuthContext } from '../contexts/AuthContext';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuthContext();
+  const { setToken } = useAuthContext();
 
   const handleLogin = async () => {
-    console.log('Logging in...');
+    console.log('Login form submitted');
     try {
       const request: UserLoginRequest = {
         email,
         password,
       };
 
+      console.log('Sending login request:', request);
       const response: UserLoginResponse = await loginUser(request);
-      console.log('Login successful:', response);
+      console.log('Received login response:', response);
 
-      // Call the login function from the AuthContext to update the authentication state
-      login(response.token);
+      if (response.success) {
+        setToken(response.token);
+        console.log('User logged in successfully');
+      } else {
+        console.log('Login failed:', response.message);
+      }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.log('Error occurred during login:', error);
     }
   };
 
