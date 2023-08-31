@@ -7,10 +7,10 @@ import { useAuthContext } from '../contexts/AuthContext';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setLoggedIn } = useAuthContext();
+  const { setAuthToken } = useAuthContext();
 
   const handleLogin = async () => {
-    console.log('Logging in...');
+    console.log('Login button clicked');
     try {
       const request: UserLoginRequest = {
         email,
@@ -18,11 +18,11 @@ const LoginScreen = () => {
       };
 
       const response: UserLoginResponse = await loginUser(request);
-      console.log('Login response:', response);
+      console.log('Login API response:', response);
 
       if (response.success) {
-        setLoggedIn(true);
-        console.log('User logged in successfully.');
+        setAuthToken(response.token);
+        console.log('User logged in successfully');
       } else {
         console.log('Login failed:', response.message);
       }
@@ -33,21 +33,18 @@ const LoginScreen = () => {
 
   return (
     <View>
-      <Text>Email:</Text>
+      <Text>Login Screen</Text>
       <TextInput
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter your email"
       />
-
-      <Text>Password:</Text>
       <TextInput
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        placeholder="Enter your password"
         secureTextEntry
       />
-
       <Button title="Login" onPress={handleLogin} />
     </View>
   );
