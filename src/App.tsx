@@ -1,23 +1,19 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { useAuthContext } from './contexts/AuthContext';
-import { useUserContext } from './contexts/UserContext';
-import { AppNavigator } from './navigation/AppNavigator';
+import RegistrationScreen from './screens/RegistrationScreen';
+import LoginScreen from './screens/LoginScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import AdminUserDetailsScreen from './screens/AdminUserDetailsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
-  const { isLoggedIn, checkLoginStatus } = useAuthContext();
-
-  useEffect(() => {
-    checkLoginStatus();
-  }, [checkLoginStatus]);
-
+  console.log('Rendering AuthStack');
   return (
     <Stack.Navigator>
       <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
@@ -27,18 +23,20 @@ const AuthStack = () => {
 };
 
 const AppStack = () => {
-  const { isAdmin } = useUserContext();
-
+  console.log('Rendering AppStack');
   return (
     <Tab.Navigator>
       <Tab.Screen name="Profile" component={ProfileScreen} />
-      {isAdmin && <Tab.Screen name="Admin User Details" component={AdminUserDetailsScreen} />}
+      <Tab.Screen name="Admin User Details" component={AdminUserDetailsScreen} />
     </Tab.Navigator>
   );
 };
 
 const App = () => {
-  const { isLoggedIn, isAdmin } = useAuthContext();
+  const isLoggedIn = false; // Check if the user is logged in
+  const isAdmin = false; // Check if the user is an admin
+
+  console.log('Rendering App');
 
   return (
     <NavigationContainer>
