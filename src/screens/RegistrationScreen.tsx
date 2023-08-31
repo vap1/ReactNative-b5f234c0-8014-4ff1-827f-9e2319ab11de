@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
+import { View, Text, TextInput, Button } from 'react-native';
 import { registerUser, UserRegistrationRequest, UserRegistrationResponse } from '../apis/UserApi';
 
 const RegistrationScreen = () => {
@@ -14,14 +14,14 @@ const RegistrationScreen = () => {
     setIsLoading(true);
     setErrorMessage('');
 
-    try {
-      // Create the registration request object
-      const registrationRequest: UserRegistrationRequest = {
-        name,
-        email,
-        password,
-      };
+    // Create the registration request object
+    const registrationRequest: UserRegistrationRequest = {
+      name,
+      email,
+      password,
+    };
 
+    try {
       // Make the API call to register the user
       const response: UserRegistrationResponse = await registerUser(registrationRequest);
 
@@ -33,8 +33,8 @@ const RegistrationScreen = () => {
         setErrorMessage(response.message);
       }
     } catch (error) {
-      console.log('Error during registration:', error.message);
-      setErrorMessage('An error occurred during registration. Please try again later.');
+      console.log('Registration error:', error.message);
+      setErrorMessage('An error occurred during registration');
     }
 
     setIsLoading(false);
