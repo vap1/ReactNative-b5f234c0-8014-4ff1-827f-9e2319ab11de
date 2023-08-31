@@ -1,39 +1,56 @@
 
 import React, { createContext, useState } from 'react';
-import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Types';
-import { registerUser } from '../apis/UserApi';
+import { UserLoginRequest, UserLoginResponse } from '../types/Types';
+import { loginUser } from '../apis/AuthApi';
 
 interface AuthContextProps {
-  register: (registrationData: UserRegistrationRequest) => Promise<UserRegistrationResponse>;
+  userToken: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
-  register: () => Promise.resolve({ success: false, message: '' }),
+  userToken: null,
+  login: async () => {},
+  logout: () => {},
 });
 
 const AuthContextProvider: React.FC = ({ children }) => {
-  const [loading, setLoading] = useState(false);
+  const [userToken, setUserToken] = useState<string | null>(null);
 
-  const register = async (registrationData: UserRegistrationRequest) => {
+  const login = async (email: string, password: string) => {
     try {
-      setLoading(true);
-      console.log('Registering user:', registrationData);
+      // Log the login request
+      console.log('Login request:', { email, password });
 
-      const response = await registerUser(registrationData);
-      console.log('Registration response:', response);
+      // Make the API call to login
+      const request: UserLoginRequest = { email, password };
+      const response: UserLoginResponse = await loginUser(request);
 
-      setLoading(false);
-      return response;
+      // Log the login response
+      console.log('Login response:', response);
+
+      // Update the user token if login is successful
+      if (response.success) {
+        setUserToken(response.token || null);
+      }
     } catch (error) {
-      console.error('Error registering user:', error);
-      setLoading(false);
-      return { success: false, message: 'An error occurred during registration.' };
+      // Log any errors that occur during login
+      console.error('Login error:', error);
     }
   };
 
+  const logout = () => {
+    // Log the logout action
+    console.log('Logout');
+
+    // Clear the user token
+    setUserToken(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ register }}>
-      {loading ? <p>Loading...</p> : children}
+    <AuthContext.Provider value={{ userToken, login, logout }}>
+      {children}
     </AuthContext.Provider>
   );
 };
