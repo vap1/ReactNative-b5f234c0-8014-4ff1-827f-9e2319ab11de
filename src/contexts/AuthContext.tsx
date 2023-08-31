@@ -1,63 +1,55 @@
 
 import React, { createContext, useState, useEffect } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
-import { AuthContextProps, User } from '../types/Types';
+import { AuthContextProps } from '../types/Types';
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  token: '',
   login: () => {},
   logout: () => {},
 });
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState('');
+  const [user, setUser] = useState<UserLoginResponse | null>(null);
 
   useEffect(() => {
     // Check if the user is already logged in
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      setToken(storedToken);
-      getUserProfile(storedToken);
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Fetch user profile using the token
+      // Add appropriate API call here
+      // Log the response
+      console.log('Fetching user profile using token:', token);
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (request: UserLoginRequest) => {
     try {
-      const request: UserLoginRequest = { email, password };
-      const response: UserLoginResponse = await loginUser(request);
-      if (response.success) {
-        setToken(response.token);
-        localStorage.setItem('token', response.token);
-        getUserProfile(response.token);
-      } else {
-        console.log('Login failed:', response.message);
-      }
+      // Make API call to login user
+      const response = await loginUser(request);
+      // Set the user in the context
+      setUser(response);
+      // Store the token in local storage
+      localStorage.setItem('token', response.token);
+      // Log the successful login
+      console.log('User logged in:', response);
     } catch (error) {
-      console.log('Login error:', error);
+      // Log the error
+      console.error('Error logging in:', error);
     }
   };
 
   const logout = () => {
+    // Clear the user from the context
     setUser(null);
-    setToken('');
+    // Remove the token from local storage
     localStorage.removeItem('token');
-  };
-
-  const getUserProfile = async (token: string) => {
-    try {
-      // Make API call to get user profile
-      // const response = await getUserProfile(token);
-      // setUser(response.user);
-      console.log('getUserProfile API call');
-    } catch (error) {
-      console.log('getUserProfile error:', error);
-    }
+    // Log the logout
+    console.log('User logged out');
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
