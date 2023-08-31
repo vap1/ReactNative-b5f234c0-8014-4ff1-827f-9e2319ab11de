@@ -1,13 +1,13 @@
 
 import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 
-const API_ENDPOINT = '/api/profile';
-
+// Function to fetch user profile from the backend API
 export const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileResponse> => {
   try {
-    console.log('Sending getUserProfile API request:', request);
+    // Log the API call
+    console.log('Fetching user profile...');
 
-    // Simulating API call and generating random data
+    // Generate random user profile data
     const userProfile = {
       name: 'John Doe',
       email: 'johndoe@example.com',
@@ -16,11 +16,22 @@ export const getUserProfile = async (request: UserProfileRequest): Promise<UserP
       profilePicture: 'https://example.com/profile.jpg',
     };
 
-    console.log('Received getUserProfile API response:', userProfile);
+    // Log the successful API response
+    console.log('User profile fetched successfully.');
 
-    return { success: true, user: userProfile };
+    // Return the user profile data
+    return {
+      success: true,
+      user: userProfile,
+    };
   } catch (error) {
-    console.error('Error in getUserProfile API:', error);
-    return { success: false, message: 'Failed to get user profile' };
+    // Log the error
+    console.error('Failed to fetch user profile:', error);
+
+    // Return an error response
+    return {
+      success: false,
+      message: 'Failed to fetch user profile.',
+    };
   }
 };
