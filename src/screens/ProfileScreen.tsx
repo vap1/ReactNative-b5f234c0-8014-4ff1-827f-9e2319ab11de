@@ -1,51 +1,46 @@
 
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, Button } from 'react-native';
-import { UserContext } from '../contexts/UserContext';
-import { UserProfileResponse, UserProfileUpdateRequest } from '../types/Types';
-import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { View, Text, TextInput, Button } from 'react-native';
+import { UserContext, UserProfileResponse, UserProfileUpdateRequest, updateUserProfile } from '../contexts/UserContext';
 
 const ProfileScreen: React.FC = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user, getUserProfile } = useContext(UserContext);
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
 
   useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setContactInfo(user.contactInfo || '');
-      setAddress(user.address || '');
-      setProfilePicture(user.profilePicture || '');
-    }
-  }, [user]);
+    console.log('Fetching user profile...');
+    getUserProfile()
+      .then((response: UserProfileResponse) => {
+        console.log('User profile fetched successfully:', response);
+        setName(response.user.name);
+        setContactInfo(response.user.contactInfo);
+        setAddress(response.user.address);
+      })
+      .catch((error: any) => {
+        console.log('Failed to fetch user profile:', error);
+      });
+  }, []);
 
-  const handleSaveChanges = async () => {
-    try {
-      const updatedProfile: UserProfileUpdateRequest = {
-        name,
-        contactInfo,
-        address,
-        profilePicture,
-      };
+  const handleSaveChanges = () => {
+    console.log('Saving changes...');
+    const updatedProfile: UserProfileUpdateRequest = {
+      name,
+      contactInfo,
+      address,
+      profilePicture: '' // Add logic to handle profile picture update
+    };
 
-      const response = await updateUserProfile(updatedProfile);
-      if (response.success) {
-        setUser((prevUser: UserProfileResponse | null) => ({
-          ...prevUser,
-          name,
-          contactInfo,
-          address,
-          profilePicture,
-        }));
-        console.log('Profile updated successfully');
-      } else {
-        console.log('Failed to update profile:', response.message);
-      }
-    } catch (error) {
-      console.log('Error updating profile:', error);
-    }
+    updateUserProfile(updatedProfile)
+      .then((response: any) => {
+        console.log('Profile updated successfully:', response);
+        // Add logic to show success message to the user
+      })
+      .catch((error: any) => {
+        console.log('Failed to update profile:', error);
+        // Add logic to show error message to the user
+      });
   };
 
   return (
@@ -58,9 +53,6 @@ const ProfileScreen: React.FC = () => {
 
       <Text>Address:</Text>
       <TextInput value={address} onChangeText={setAddress} />
-
-      <Text>Profile Picture:</Text>
-      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
 
       <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
