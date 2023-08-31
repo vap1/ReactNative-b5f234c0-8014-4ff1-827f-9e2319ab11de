@@ -15,27 +15,25 @@ const RegistrationScreen = () => {
     setErrorMessage('');
 
     try {
-      const request: UserRegistrationRequest = {
+      // Create the registration request object
+      const registrationRequest: UserRegistrationRequest = {
         name,
         email,
         password,
       };
 
-      console.log('Sending registration request:', request);
-
-      const response: UserRegistrationResponse = await registerUser(request);
-
-      console.log('Received registration response:', response);
+      // Make the API call to register the user
+      const response: UserRegistrationResponse = await registerUser(registrationRequest);
 
       if (response.success) {
-        console.log('Registration successful!');
-        // Redirect to the login screen or perform any other necessary actions
+        console.log('Registration successful');
+        // Redirect to the login screen or show a success message
       } else {
         console.log('Registration failed:', response.message);
         setErrorMessage(response.message);
       }
     } catch (error) {
-      console.log('Error occurred during registration:', error.message);
+      console.log('Error during registration:', error.message);
       setErrorMessage('An error occurred during registration. Please try again later.');
     }
 
