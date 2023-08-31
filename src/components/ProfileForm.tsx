@@ -1,70 +1,68 @@
 
-import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, TextInput, Button } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { updateProfile } from '../apis/ProfileUpdateApi';
-import { UserProfileUpdateRequest } from '../types/Types';
+import { UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
+import { updateUserProfile } from '../apis/ProfileUpdateApi';
 
 const ProfileForm: React.FC = () => {
-  const { user, setUser } = useContext(UserContext);
-  const [name, setName] = useState(user.name);
-  const [contactInfo, setContactInfo] = useState(user.contactInfo);
-  const [address, setAddress] = useState(user.address);
+  const { userProfile, fetchUserProfile } = useContext(UserContext);
+  const [name, setName] = useState(userProfile?.user.name || '');
+  const [contactInfo, setContactInfo] = useState(userProfile?.user.contactInfo || '');
+  const [address, setAddress] = useState(userProfile?.user.address || '');
 
-  const handleSaveChanges = async () => {
+  const handleProfileUpdate = async () => {
     try {
-      // Step 1: Create the request object
+      // Log the profile update request
+      console.log('Profile update request:', { name, contactInfo, address });
+
+      // Make the API call to update the user profile
       const request: UserProfileUpdateRequest = {
-        token: user.token,
+        token: userProfile?.user.token || '',
         name,
         contactInfo,
         address,
       };
+      const response: UserProfileUpdateResponse = await updateUserProfile(request);
 
-      // Step 2: Send the API request to update the user profile
-      const response = await updateProfile(request);
+      // Log the profile update response
+      console.log('Profile update response:', response);
 
-      // Step 3: Handle the API response
+      // Handle the profile update success or failure
       if (response.success) {
-        // Step 4: Update the user context with the updated profile information
-        setUser({
-          ...user,
-          name,
-          contactInfo,
-          address,
-        });
+        // Profile update successful
+        console.log('User profile update successful');
 
-        // Step 5: Show a success message
-        Alert.alert('Success', response.message);
+        // Fetch the updated user profile
+        await fetchUserProfile(request.token);
       } else {
-        // Step 6: Show an error message
-        Alert.alert('Error', response.message);
+        // Profile update failed
+        console.log('User profile update failed');
       }
     } catch (error) {
-      // Step 7: Handle any errors
-      console.error('Error updating profile:', error);
-      Alert.alert('Error', 'An error occurred while updating the profile.');
+      // Log any errors that occur during profile update
+      console.error('Profile update error:', error);
     }
   };
 
   return (
     <View>
       <TextInput
+        placeholder="Name"
         value={name}
         onChangeText={setName}
-        placeholder="Name"
       />
       <TextInput
+        placeholder="Contact Info"
         value={contactInfo}
         onChangeText={setContactInfo}
-        placeholder="Contact Info"
       />
       <TextInput
+        placeholder="Address"
         value={address}
         onChangeText={setAddress}
-        placeholder="Address"
       />
-      <Button title="Save Changes" onPress={handleSaveChanges} />
+      <Button title="Save" onPress={handleProfileUpdate} />
     </View>
   );
 };
