@@ -2,35 +2,20 @@
 import React, { useContext, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { UserContext } from '../contexts/UserContext';
-import { AdminUserDetailsResponse } from '../types/Types';
-import { getAdminUserDetails } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
-  const { users, setUsers } = useContext(UserContext);
+  const { users, getUsers } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const response: AdminUserDetailsResponse = await getAdminUserDetails();
-        console.log('Admin User Details Response:', response);
-        if (response.success) {
-          setUsers(response.users);
-          console.log('Users:', response.users);
-        } else {
-          console.log('Failed to fetch user details:', response.message);
-        }
-      } catch (error) {
-        console.log('Error fetching user details:', error);
-      }
-    };
-
-    fetchUserDetails();
+    console.log('Fetching user list...');
+    getUsers();
   }, []);
 
+  console.log('Rendering user list...');
   return (
     <View>
       <Text>User List:</Text>
-      {users.map((user) => (
+      {users.map((user: any) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
           <Text>Email: {user.email}</Text>
