@@ -1,39 +1,36 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
-import { UserLoginRequest, UserLoginResponse } from '../types/Types';
-import { loginUser } from '../apis/AuthApi';
+import { View, TextInput, Button, Text } from 'react-native';
 
-const LoginScreen: React.FC = () => {
+const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      // Log the login request
-      console.log('Login request:', { email, password });
-
-      // Make the API call to login
-      const request: UserLoginRequest = { email, password };
-      const response: UserLoginResponse = await loginUser(request);
-
-      // Log the login response
-      console.log('Login response:', response);
-
-      // Update the user token if login is successful
-      if (response.success) {
-        console.log('User login successful');
-      } else {
-        console.log('User login failed');
-      }
-    } catch (error) {
-      // Log any errors that occur during login
-      console.error('Login error:', error);
+  const handleLogin = () => {
+    if (!email || !password) {
+      setErrorMessage('Please enter your email and password.');
+      return;
     }
+
+    setIsLoading(true);
+    setErrorMessage('');
+
+    // Perform API call to login user
+    console.log('Logging in user...');
+    // Your API call code here
+
+    // Simulating API call with setTimeout
+    setTimeout(() => {
+      setIsLoading(false);
+      setErrorMessage('Invalid email or password. Please try again.');
+    }, 2000);
   };
 
   return (
     <View>
+      <Text>Login Screen</Text>
       <TextInput
         placeholder="Email"
         value={email}
@@ -45,7 +42,8 @@ const LoginScreen: React.FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Login" onPress={handleLogin} disabled={isLoading} />
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
     </View>
   );
 };
