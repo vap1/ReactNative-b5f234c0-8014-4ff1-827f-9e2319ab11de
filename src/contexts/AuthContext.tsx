@@ -1,54 +1,41 @@
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
-export const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  login: () => {},
-  logout: () => {},
-});
+export const AuthContext = createContext<AuthContextProps>({});
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<UserLoginResponse | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    // Check if the user is already logged in
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Fetch user profile using the token
-      // Add appropriate API call here
-      // Example: getUserProfile(token).then((response) => setUser(response.user));
+  const login = async (email: string, password: string) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Log in the user
+      const request: UserLoginRequest = { email, password };
+      const response: UserLoginResponse = await loginUser(request);
+
+      if (response.success) {
+        setIsLoggedIn(true);
+        console.log('User logged in successfully');
+      } else {
+        setError(response.message);
+        console.log('Login failed:', response.message);
+      }
+    } catch (error) {
+      setError('An error occurred during login');
+      console.error('Login error:', error);
     }
-  }, []);
 
-  const login = (request: UserLoginRequest) => {
-    // Add loading state and error handling logic here
-    // Example: setLoading(true);
-    loginUser(request)
-      .then((response) => {
-        // Set the user in the context and store the token
-        setUser(response);
-        localStorage.setItem('token', response.token);
-      })
-      .catch((error) => {
-        // Handle login error
-        console.error('Login error:', error);
-      })
-      .finally(() => {
-        // Add loading state handling here
-        // Example: setLoading(false);
-      });
-  };
-
-  const logout = () => {
-    // Clear the user from the context and remove the token
-    setUser(null);
-    localStorage.removeItem('token');
+    setIsLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, isLoading, error, login }}>
       {children}
     </AuthContext.Provider>
   );
