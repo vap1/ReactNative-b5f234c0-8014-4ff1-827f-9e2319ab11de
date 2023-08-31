@@ -1,43 +1,51 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { UserContext, UserProfileResponse, UserProfileUpdateRequest, updateUserProfile } from '../contexts/UserContext';
+import { UserContext, UserProfileUpdateRequest, UserProfileResponse } from '../contexts/UserContext';
+import { updateUserProfile } from '../apis/ProfileUpdateApi';
 
 const ProfileScreen: React.FC = () => {
-  const { user, getUserProfile } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
 
   useEffect(() => {
-    console.log('Fetching user profile...');
-    getUserProfile()
-      .then((response: UserProfileResponse) => {
-        console.log('User profile fetched successfully:', response);
-        setName(response.user.name);
-        setContactInfo(response.user.contactInfo);
-        setAddress(response.user.address);
-      })
-      .catch((error: any) => {
-        console.log('Failed to fetch user profile:', error);
-      });
-  }, []);
+    if (user) {
+      setName(user.name);
+      setContactInfo(user.contactInfo || '');
+      setAddress(user.address || '');
+    }
+  }, [user]);
 
-  const handleSaveChanges = () => {
+  const handleSaveChanges = async () => {
     console.log('Saving changes...');
-    const updatedProfile: UserProfileUpdateRequest = {
+    const request: UserProfileUpdateRequest = {
+      token: user?.token || '',
       name,
       contactInfo,
       address,
     };
 
-    updateUserProfile(updatedProfile)
-      .then((response: any) => {
-        console.log('Profile updated successfully:', response);
-      })
-      .catch((error: any) => {
-        console.log('Failed to update profile:', error);
-      });
+    try {
+      const response = await updateUserProfile(request);
+      console.log('Profile update response:', response);
+
+      if (response.success) {
+        console.log('Profile updated successfully');
+        const updatedUser: UserProfileResponse = {
+          ...user,
+          name,
+          contactInfo,
+          address,
+        };
+        setUser(updatedUser);
+      } else {
+        console.log('Profile update failed:', response.message);
+      }
+    } catch (error) {
+      console.log('Profile update error:', error);
+    }
   };
 
   return (
