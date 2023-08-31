@@ -1,48 +1,57 @@
 
-import React, { createContext, useState } from 'react';
-import { UserProfileRequest, UserProfileResponse } from '../types/Types';
-import { getUserProfile } from '../apis/ProfileApi';
+import React, { createContext, useState, useEffect } from 'react';
+import { UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
+import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
 
 interface UserContextProps {
   userProfile: UserProfileResponse | null;
-  fetchUserProfile: (token: string) => Promise<void>;
+  updateUserProfile: (request: UserProfileUpdateRequest) => Promise<UserProfileUpdateResponse>;
 }
 
 export const UserContext = createContext<UserContextProps>({
   userProfile: null,
-  fetchUserProfile: async () => {},
+  updateUserProfile: () => Promise.resolve({ success: false, message: '' }),
 });
 
-const UserContextProvider: React.FC = ({ children }) => {
+export const UserProvider: React.FC = ({ children }) => {
   const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
 
-  const fetchUserProfile = async (token: string) => {
-    try {
-      // Log the fetch user profile request
-      console.log('Fetch user profile request:', { token });
-
-      // Make the API call to fetch user profile
-      const request: UserProfileRequest = { token };
-      const response: UserProfileResponse = await getUserProfile(request);
-
-      // Log the fetch user profile response
-      console.log('Fetch user profile response:', response);
-
-      // Update the user profile if successful
-      if (response.user) {
-        setUserProfile(response);
+  useEffect(() => {
+    // Fetch user profile on component mount
+    const fetchUserProfile = async () => {
+      try {
+        const response = await getUserProfile();
+        setUserProfile(response.user);
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
       }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  const handleUpdateUserProfile = async (request: UserProfileUpdateRequest) => {
+    try {
+      const response = await updateUserProfile(request);
+      if (response.success) {
+        setUserProfile((prevProfile) => ({
+          ...prevProfile,
+          name: request.name || prevProfile?.name,
+          contactInfo: request.contactInfo || prevProfile?.contactInfo,
+          address: request.address || prevProfile?.address,
+          profilePicture: request.profilePicture || prevProfile?.profilePicture,
+        }));
+      }
+      return response;
     } catch (error) {
-      // Log any errors that occur during fetch user profile
-      console.error('Fetch user profile error:', error);
+      console.error('Failed to update user profile:', error);
+      return { success: false, message: 'Failed to update user profile' };
     }
   };
 
   return (
-    <UserContext.Provider value={{ userProfile, fetchUserProfile }}>
+    <UserContext.Provider value={{ userProfile, updateUserProfile: handleUpdateUserProfile }}>
       {children}
     </UserContext.Provider>
   );
 };
-
-export default UserContextProvider;
