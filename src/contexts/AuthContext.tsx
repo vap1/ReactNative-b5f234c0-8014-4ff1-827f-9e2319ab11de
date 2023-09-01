@@ -1,67 +1,36 @@
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
 export const AuthContext = createContext<AuthContextProps>({});
 
 export const AuthProvider: React.FC = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if the user is already logged in
-    const checkLoggedInStatus = async () => {
-      try {
-        // Make an API call to check if the user is logged in
-        const response = await loginUser({}); // Replace {} with the appropriate request parameters
-
-        // Check the response and update the isLoggedIn state accordingly
-        if (response.success) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (error) {
-        console.error('Error checking login status:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkLoggedInStatus();
-  }, []);
-
-  const handleLogin = async (loginData: UserLoginRequest) => {
+  const handleLogin = async (email: string, password: string) => {
     try {
-      // Make an API call to log in the user
-      const response: UserLoginResponse = await loginUser(loginData);
-
-      // Check the response and update the isLoggedIn state accordingly
+      setIsLoading(true);
+      console.log('Logging in...');
+      const request: UserLoginRequest = { email, password };
+      const response: UserLoginResponse = await loginUser(request);
+      console.log('Login response:', response);
       if (response.success) {
         setIsLoggedIn(true);
+        console.log('User logged in successfully!');
       } else {
-        setIsLoggedIn(false);
+        console.log('Login failed:', response.message);
       }
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.log('Error occurred during login:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    // Perform any necessary cleanup or API calls to log out the user
-    setIsLoggedIn(false);
-  };
-
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        isLoading,
-        handleLogin,
-        handleLogout,
-      }}
-    >
+    <AuthContext.Provider value={{ isLoading, isLoggedIn, handleLogin }}>
       {children}
     </AuthContext.Provider>
   );
