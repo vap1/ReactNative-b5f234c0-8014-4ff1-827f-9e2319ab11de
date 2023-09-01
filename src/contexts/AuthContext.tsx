@@ -1,41 +1,56 @@
 
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
-export const AuthContext = createContext<AuthContextProps>({});
+export const AuthContext = createContext<AuthContextProps>({
+  user: null,
+  login: () => {},
+  logout: () => {},
+});
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [user, setUser] = useState<UserLoginResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    setError('');
-
-    try {
-      // Log in the user
-      const request: UserLoginRequest = { email, password };
-      const response: UserLoginResponse = await loginUser(request);
-
-      if (response.success) {
-        setIsLoggedIn(true);
-        console.log('User logged in successfully');
-      } else {
-        setError(response.message);
-        console.log('Login failed:', response.message);
-      }
-    } catch (error) {
-      setError('An error occurred during login');
-      console.error('Login error:', error);
+  useEffect(() => {
+    // Log: Fetching user data from local storage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      // Log: User data found in local storage
+      setUser(JSON.parse(userData));
     }
+    setLoading(false);
+  }, []);
 
-    setIsLoading(false);
+  const login = async (request: UserLoginRequest) => {
+    try {
+      // Log: Sending login request to the server
+      const response = await loginUser(request);
+      // Log: Login successful
+      setUser(response);
+      // Log: Saving user data to local storage
+      localStorage.setItem('user', JSON.stringify(response));
+    } catch (error) {
+      // Log: Login failed
+      console.error('Login failed:', error);
+    }
   };
 
+  const logout = () => {
+    // Log: Clearing user data from local storage
+    localStorage.removeItem('user');
+    // Log: User logged out
+    setUser(null);
+  };
+
+  if (loading) {
+    // Log: Loading state
+    return <div>Loading...</div>;
+  }
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, isLoading, error, login }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
