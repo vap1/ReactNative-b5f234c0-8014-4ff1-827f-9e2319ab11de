@@ -1,35 +1,50 @@
 
 import React, { useState } from 'react';
 import { View, TextInput, Button } from 'react-native';
-import { registerUser, UserRegistrationRequest, UserRegistrationResponse } from '../apis/UserApi';
-import { useAuthContext, AuthContextProps } from '../contexts/AuthContext';
-import { AuthContextProps } from '../types/Types';
+import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Types';
+import { registerUser } from '../apis/UserApi';
 
-const RegistrationForm: React.FC = () => {
+const RegistrationForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { loginUser } = useAuthContext() as AuthContextProps;
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleRegistration = async () => {
-    console.log('Registration form submitted');
     try {
+      setIsLoading(true);
+      setErrorMessage('');
+
       const request: UserRegistrationRequest = {
         name,
         email,
         password,
       };
+
+      // Log: Sending user registration request to the server
+      console.log('Sending user registration request:', request);
+
       const response: UserRegistrationResponse = await registerUser(request);
-      console.log('Registration response:', response);
-      if (response.success) {
-        console.log('User registration successful');
-        // Automatically log in the user after successful registration
-        await loginUser({ email, password });
-      } else {
-        console.log('User registration failed:', response.message);
-      }
+
+      // Log: User registration successful
+      console.log('User registration successful:', response);
+
+      // Reset form fields
+      setName('');
+      setEmail('');
+      setPassword('');
+
+      // Show success message to the user
+      alert('User registration successful');
     } catch (error) {
-      console.log('Error occurred during user registration:', error);
+      // Log: User registration failed
+      console.error('User registration failed:', error);
+
+      // Show error message to the user
+      setErrorMessage('User registration failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,7 +66,12 @@ const RegistrationForm: React.FC = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegistration} />
+      <Button
+        title={isLoading ? 'Loading...' : 'Register'}
+        onPress={handleRegistration}
+        disabled={isLoading}
+      />
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
     </View>
   );
 };
