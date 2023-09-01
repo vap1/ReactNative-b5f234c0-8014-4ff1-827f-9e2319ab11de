@@ -1,33 +1,25 @@
 
-import { UserRegistrationRequest, UserRegistrationResponse, UserLoginRequest, UserLoginResponse } from '../types/Types';
+import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Types';
 
-const registerUser = async (request: UserRegistrationRequest): Promise<UserRegistrationResponse> => {
-  console.log('Calling registerUser API');
-  console.log('Request:', request);
+export const registerUser = async (request: UserRegistrationRequest): Promise<UserRegistrationResponse> => {
+  try {
+    // Log: Sending user registration request to the server
+    console.log('Sending user registration request:', request);
 
-  // Generate random data for response
-  const response: UserRegistrationResponse = {
-    success: true,
-    message: 'User registration successful',
-  };
+    // Simulating API call and generating random data
+    const response: UserRegistrationResponse = {
+      success: true,
+      message: 'User registration successful',
+    };
 
-  console.log('Response:', response);
-  return response;
+    // Log: User registration successful
+    console.log('User registration successful:', response);
+
+    return response;
+  } catch (error) {
+    // Log: User registration failed
+    console.error('User registration failed:', error);
+
+    throw error;
+  }
 };
-
-const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> => {
-  console.log('Calling loginUser API');
-  console.log('Request:', request);
-
-  // Generate random data for response
-  const response: UserLoginResponse = {
-    success: true,
-    message: 'User login successful',
-    token: 'random_token',
-  };
-
-  console.log('Response:', response);
-  return response;
-};
-
-export { registerUser, loginUser };
