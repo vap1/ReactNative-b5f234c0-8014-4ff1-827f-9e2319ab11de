@@ -1,39 +1,52 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
-import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
-import { useAuthContext } from '../contexts/AuthContext';
+import { Text, TextInput, Button } from 'react-native';
+import { UserLoginRequest, UserLoginResponse } from '../types/Types';
+import { loginUser } from '../apis/AuthApi';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setAuthToken } = useAuthContext();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = async () => {
     try {
-      console.log('Sending login request to the server'); // Log: Sending login request to the server
+      // Validate input
+      if (!email || !password) {
+        setErrorMessage('Please enter your email and password');
+        return;
+      }
 
+      // Create login request object
       const request: UserLoginRequest = {
         email,
         password,
       };
 
-      const response: UserLoginResponse = await loginUser(request); // Call the loginUser API function
+      // Make API call to login user
+      console.log('Making login API call...');
+      console.log('Request:', request);
+      const response: UserLoginResponse = await loginUser(request);
+      console.log('Response:', response);
 
+      // Check login response
       if (response.success) {
-        console.log('Login successful'); // Log: Login successful
-
-        setAuthToken(response.token); // Set the auth token in the context
+        // Login successful, perform necessary actions
+        console.log('Login successful');
       } else {
-        console.log('Login failed:', response.message); // Log: Login failed
+        // Login failed, display error message
+        setErrorMessage(response.message);
       }
     } catch (error) {
-      console.error('Login failed:', error); // Log: Login failed
+      console.error('Error logging in:', error);
+      setErrorMessage('An error occurred while logging in');
     }
   };
 
   return (
-    <View>
+    <>
+      <Text>Login</Text>
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
       <TextInput
         placeholder="Email"
         value={email}
@@ -46,7 +59,7 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
-    </View>
+    </>
   );
 };
 
