@@ -1,44 +1,41 @@
 
-import { UserProfileRequest, UserProfileResponse } from '../types/Types';
+import { UserProfileRequest, UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
 
-const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileResponse> => {
-  try {
-    console.log('Fetching user profile...');
-    // Simulate API call and generate random data
-    const userProfile = {
+// Function to fetch user profile
+export const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileResponse> => {
+  // Log: Fetching user profile
+  console.log('Fetching user profile');
+
+  // Simulating API call and generating random data
+  const userProfile: UserProfileResponse = {
+    user: {
       name: 'John Doe',
       email: 'johndoe@example.com',
       contactInfo: '1234567890',
       address: '123 Main St',
       profilePicture: 'https://example.com/profile.jpg',
-    };
+    },
+  };
 
-    console.log('User profile fetched successfully:', userProfile);
-    return { user: userProfile };
-  } catch (error) {
-    console.error('Failed to fetch user profile:', error);
-    throw new Error('Failed to fetch user profile');
-  }
+  // Log: User profile fetched successfully
+  console.log('User profile fetched successfully');
+
+  return userProfile;
 };
 
-const updateUserProfile = async (request: UserProfileRequest): Promise<boolean> => {
-  try {
-    console.log('Updating user profile...');
-    // Simulate API call and generate random data
-    const updatedUserProfile = {
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      contactInfo: '1234567890',
-      address: '123 Main St',
-      profilePicture: 'https://example.com/profile.jpg',
-    };
+// Function to update user profile
+export const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
+  // Log: Updating user profile
+  console.log('Updating user profile');
 
-    console.log('User profile updated successfully:', updatedUserProfile);
-    return true;
-  } catch (error) {
-    console.error('Failed to update user profile:', error);
-    throw new Error('Failed to update user profile');
-  }
+  // Simulating API call and generating random data
+  const response: UserProfileUpdateResponse = {
+    success: true,
+    message: 'User profile updated successfully',
+  };
+
+  // Log: User profile updated successfully
+  console.log('User profile updated successfully');
+
+  return response;
 };
-
-export { getUserProfile, updateUserProfile };
