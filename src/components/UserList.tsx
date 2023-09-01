@@ -1,29 +1,28 @@
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { UserContext, User } from '../contexts/UserContext';
-import { getUsers, UserContextProps } from '../apis/AdminApi';
+import { getUsers, User } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
-  const { users, setUsers }: UserContextProps = useContext(UserContext);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        setLoading(true);
+        // Log: Fetching users
+        console.log('Fetching users');
+
+        // Call the API to get the list of users
         const response = await getUsers();
-        console.log('API Response:', response);
-        if (response.success) {
-          setUsers(response.users);
-          console.log('Users:', response.users);
-        } else {
-          console.log('Error:', response.message);
-        }
+
+        // Log: Users fetched successfully
+        console.log('Users fetched successfully');
+
+        // Update the state with the fetched users
+        setUsers(response.users);
       } catch (error) {
-        console.log('Error:', error.message);
-      } finally {
-        setLoading(false);
+        // Log: Error fetching users
+        console.error('Error fetching users:', error);
       }
     };
 
@@ -32,21 +31,16 @@ const UserList: React.FC = () => {
 
   return (
     <View>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <View>
-          {users.map((user: User) => (
-            <View key={user.email}>
-              <Text>Name: {user.name}</Text>
-              <Text>Email: {user.email}</Text>
-              <Text>Contact Info: {user.contactInfo}</Text>
-              <Text>Address: {user.address}</Text>
-              <Text>Profile Picture: {user.profilePicture}</Text>
-            </View>
-          ))}
+      <Text>User List:</Text>
+      {users.map((user) => (
+        <View key={user.email}>
+          <Text>Name: {user.name}</Text>
+          <Text>Email: {user.email}</Text>
+          <Text>Contact Info: {user.contactInfo}</Text>
+          <Text>Address: {user.address}</Text>
+          <Text>Profile Picture: {user.profilePicture}</Text>
         </View>
-      )}
+      ))}
     </View>
   );
 };
