@@ -1,45 +1,52 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
-import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
-import { useAuthContext } from '../contexts/AuthContext';
+import { Text, TextInput, Button } from 'react-native';
+import { UserLoginRequest, UserLoginResponse } from '../types/Types';
+import loginUser from '../apis/AuthApi';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setAuthToken } = useAuthContext();
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = async () => {
     try {
-      // Log: Sending login request to the server
-      console.log('Sending login request to the server');
+      // Validate input
+      if (!email || !password) {
+        setErrorMessage('Please enter your email and password');
+        return;
+      }
 
+      // Create login request object
       const request: UserLoginRequest = {
         email,
         password,
       };
 
-      // Call the loginUser API function
+      // Make API call to login user
+      console.log('Making login API call...');
+      console.log('Request:', request);
       const response: UserLoginResponse = await loginUser(request);
+      console.log('Response:', response);
 
+      // Check login response
       if (response.success) {
-        // Log: Login successful
+        // Login successful, perform necessary actions
         console.log('Login successful');
-
-        // Set the auth token in the context
-        setAuthToken(response.token);
       } else {
-        // Log: Login failed
-        console.log('Login failed:', response.message);
+        // Login failed, display error message
+        setErrorMessage(response.message);
       }
     } catch (error) {
-      // Log: Login failed
-      console.error('Login failed:', error);
+      console.error('Error logging in:', error);
+      setErrorMessage('An error occurred while logging in');
     }
   };
 
   return (
-    <View>
+    <>
+      <Text>Login</Text>
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
       <TextInput
         placeholder="Email"
         value={email}
@@ -52,7 +59,7 @@ const LoginForm = () => {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
-    </View>
+    </>
   );
 };
 
