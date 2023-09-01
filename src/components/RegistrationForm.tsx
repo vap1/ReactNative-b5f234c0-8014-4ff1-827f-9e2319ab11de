@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button } from 'react-native';
 import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Types';
 import { registerUser } from '../apis/UserApi';
 
@@ -16,33 +16,33 @@ const RegistrationForm = () => {
       setIsLoading(true);
       setErrorMessage('');
 
+      // Create the registration request object
       const request: UserRegistrationRequest = {
         name,
         email,
         password,
       };
 
-      // Log: Sending user registration request to the server
-      console.log('Sending user registration request:', request);
+      // Log the registration request
+      console.log('User Registration Request:', request);
 
+      // Make the API call to register the user
       const response: UserRegistrationResponse = await registerUser(request);
 
-      // Log: User registration successful
-      console.log('User registration successful:', response);
+      // Log the registration response
+      console.log('User Registration Response:', response);
 
-      // Reset form fields
-      setName('');
-      setEmail('');
-      setPassword('');
-
-      // Show success message to the user
-      alert('User registration successful');
+      if (response.success) {
+        // Registration successful
+        alert('Registration successful');
+      } else {
+        // Registration failed
+        setErrorMessage(response.message);
+      }
     } catch (error) {
-      // Log: User registration failed
-      console.error('User registration failed:', error);
-
-      // Show error message to the user
-      setErrorMessage('User registration failed. Please try again.');
+      // Log any errors that occur during the registration process
+      console.error('Error registering user:', error);
+      setErrorMessage('Error registering user');
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +50,7 @@ const RegistrationForm = () => {
 
   return (
     <View>
+      <Text>Registration Form</Text>
       <TextInput
         placeholder="Name"
         value={name}
@@ -66,12 +67,12 @@ const RegistrationForm = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
+      {errorMessage ? <Text>{errorMessage}</Text> : null}
       <Button
         title={isLoading ? 'Loading...' : 'Register'}
         onPress={handleRegistration}
         disabled={isLoading}
       />
-      {errorMessage ? <Text>{errorMessage}</Text> : null}
     </View>
   );
 };
