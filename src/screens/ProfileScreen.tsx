@@ -1,104 +1,113 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
-import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { getUserProfile, UserProfileRequest, UserProfileResponse } from '../apis/ProfileApi';
+import { updateUserProfile, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../apis/ProfileUpdateApi';
+import { useUserContext } from '../contexts/UserContext';
+import { User } from '../types/Types';
 
-const ProfileScreen: React.FC = () => {
+const ProfileScreen = () => {
+  const { user, setUser } = useUserContext();
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
 
-  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
   useEffect(() => {
-    console.log('Fetching user profile...');
-    setIsLoading(true);
-    setIsError(false);
-
     const fetchUserProfile = async () => {
-      try {
-        // Simulate API call and generate random data
-        const userProfile: UserProfileResponse = {
-          user: {
-            name: 'John Doe',
-            email: 'johndoe@example.com',
-            contactInfo: '1234567890',
-            address: '123 Main St',
-            profilePicture: 'https://example.com/profile.jpg',
-          },
-        };
+      // Log: Fetching user profile
+      console.log('Fetching user profile');
 
-        setUserProfile(userProfile);
-        setIsLoading(false);
-        console.log('User profile fetched successfully:', userProfile);
+      // Prepare the request payload
+      const request: UserProfileRequest = {
+        token: user.token,
+      };
+
+      try {
+        // Make the API call to get the user profile
+        const response: UserProfileResponse = await getUserProfile(request);
+
+        // Log: User profile fetched successfully
+        console.log('User profile fetched successfully');
+
+        // Update the user context with the fetched profile
+        setUser(response.user);
+
+        // Set the form fields with the fetched profile data
+        setName(response.user.name);
+        setContactInfo(response.user.contactInfo || '');
+        setAddress(response.user.address || '');
+        setProfilePicture(response.user.profilePicture || '');
       } catch (error) {
+        // Log: Error fetching user profile
         console.error('Error fetching user profile:', error);
-        setIsLoading(false);
-        setIsError(true);
+
+        // Display an error message to the user
+        alert('An error occurred while fetching the user profile');
       }
     };
 
     fetchUserProfile();
-  }, []);
+  }, [user.token, setUser]);
 
-  const handleSaveChanges = async () => {
-    console.log('Saving changes...');
-    setIsLoading(true);
-    setIsError(false);
+  const handleSaveProfile = async () => {
+    // Log: Updating user profile
+    console.log('Updating user profile');
+
+    // Prepare the request payload
+    const request: UserProfileUpdateRequest = {
+      token: user.token,
+      name,
+      contactInfo,
+      address,
+      profilePicture,
+    };
 
     try {
-      // Prepare request payload
-      const request: UserProfileUpdateRequest = {
-        token: 'your-auth-token',
-        name,
-        contactInfo,
-        address,
-        profilePicture,
-      };
-
-      // Update user profile
+      // Make the API call to update the user profile
       const response: UserProfileUpdateResponse = await updateUserProfile(request);
 
-      setSuccessMessage(response.message);
-      setIsLoading(false);
-      console.log('Changes saved successfully:', response);
+      // Log: User profile updated successfully
+      console.log('User profile updated successfully');
+
+      // Handle the response
+      if (response.success) {
+        // Log: Profile update success message
+        console.log('Profile update success message:', response.message);
+
+        // Display a success message to the user
+        alert('Profile updated successfully');
+      } else {
+        // Log: Profile update error message
+        console.log('Profile update error message:', response.message);
+
+        // Display an error message to the user
+        alert('Failed to update profile');
+      }
     } catch (error) {
-      console.error('Error updating user profile:', error);
-      setIsLoading(false);
-      setIsError(true);
+      // Log: Profile update error
+      console.error('Profile update error:', error);
+
+      // Display an error message to the user
+      alert('An error occurred while updating the profile');
     }
   };
 
   return (
     <View>
-      {isLoading ? (
-        <Text>Loading...</Text>
-      ) : isError ? (
-        <Text>Error occurred while fetching user profile.</Text>
-      ) : (
-        <>
-          <Text>Name:</Text>
-          <TextInput value={name} onChangeText={setName} />
+      <Text>Name:</Text>
+      <TextInput value={name} onChangeText={setName} />
 
-          <Text>Contact Info:</Text>
-          <TextInput value={contactInfo} onChangeText={setContactInfo} />
+      <Text>Contact Info:</Text>
+      <TextInput value={contactInfo} onChangeText={setContactInfo} />
 
-          <Text>Address:</Text>
-          <TextInput value={address} onChangeText={setAddress} />
+      <Text>Address:</Text>
+      <TextInput value={address} onChangeText={setAddress} />
 
-          <Text>Profile Picture:</Text>
-          <TextInput value={profilePicture} onChangeText={setProfilePicture} />
+      <Text>Profile Picture:</Text>
+      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
 
-          <Button title="Save Changes" onPress={handleSaveChanges} />
-
-          {successMessage && <Text>{successMessage}</Text>}
-        </>
-      )}
+      <Button title="Save" onPress={handleSaveProfile} />
     </View>
   );
 };
