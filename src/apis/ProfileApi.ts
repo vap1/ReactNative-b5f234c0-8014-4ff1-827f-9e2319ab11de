@@ -1,0 +1,33 @@
+
+import { UserProfileRequest, UserProfileResponse } from '../types/Types';
+
+// Function to generate random user profile data
+const generateRandomUserProfile = (): UserProfileResponse => {
+  const user = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    contactInfo: '1234567890',
+    address: '123 Main St',
+    profilePicture: 'https://example.com/profile.jpg',
+  };
+
+  console.log('Fetching user profile...');
+  console.log('User profile fetched successfully:', user);
+
+  return { user };
+};
+
+// Function to fetch user profile
+export const getUserProfile = async (): Promise<UserProfileResponse> => {
+  try {
+    // Simulating API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const userProfile = generateRandomUserProfile();
+
+    return userProfile;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw new Error('Failed to fetch user profile');
+  }
+};
