@@ -14,24 +14,22 @@ const generateRandomUser = (): User => {
 };
 
 // Function to get admin user details
-const getAdminUserDetails = async (request: AdminUserDetailsRequest): Promise<AdminUserDetailsResponse> => {
-  try {
-    console.log('Fetching admin user details...');
-    // Simulating API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+const getAdminUserDetails = (request: AdminUserDetailsRequest): AdminUserDetailsResponse => {
+  // Log: AdminApi - getAdminUserDetails - Fetching admin user details
+  console.log('Fetching admin user details...');
 
-    // Generate random user data
-    const users: User[] = [];
-    for (let i = 0; i < 10; i++) {
-      users.push(generateRandomUser());
-    }
-
-    console.log('Admin user details fetched:', users);
-    return { users };
-  } catch (error) {
-    console.error('Error fetching admin user details:', error);
-    throw new Error('Failed to fetch admin user details');
+  // Generate random user data
+  const users: User[] = [];
+  for (let i = 0; i < 10; i++) {
+    users.push(generateRandomUser());
   }
+
+  // Log: AdminApi - getAdminUserDetails - Admin user details fetched successfully
+  console.log('Admin user details fetched successfully:', users);
+
+  return {
+    users,
+  };
 };
 
 export default getAdminUserDetails;
