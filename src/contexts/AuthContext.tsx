@@ -1,36 +1,44 @@
 
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
 export const AuthContext = createContext<AuthContextProps>({});
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<UserLoginResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogin = async (email: string, password: string) => {
+  useEffect(() => {
+    // Log: AuthProvider - useEffect - Fetching user data from local storage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+    setLoading(false);
+  }, []);
+
+  const handleLogin = async (loginData: UserLoginRequest) => {
     try {
-      setIsLoading(true);
-      console.log('Logging in...');
-      const request: UserLoginRequest = { email, password };
-      const response: UserLoginResponse = await loginUser(request);
-      console.log('Login response:', response);
-      if (response.success) {
-        setIsLoggedIn(true);
-        console.log('User logged in successfully!');
-      } else {
-        console.log('Login failed:', response.message);
-      }
+      // Log: AuthProvider - handleLogin - Sending login request
+      const response = await loginUser(loginData);
+      // Log: AuthProvider - handleLogin - Login response received
+      setUser(response);
+      localStorage.setItem('user', JSON.stringify(response));
     } catch (error) {
-      console.log('Error occurred during login:', error);
-    } finally {
-      setIsLoading(false);
+      // Log: AuthProvider - handleLogin - Error occurred during login
+      console.error('Error occurred during login:', error);
     }
   };
 
+  const handleLogout = () => {
+    // Log: AuthProvider - handleLogout - Clearing user data from local storage
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoading, isLoggedIn, handleLogin }}>
+    <AuthContext.Provider value={{ user, loading, handleLogin, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
