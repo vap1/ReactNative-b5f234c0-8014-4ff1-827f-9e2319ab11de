@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -9,18 +9,14 @@ import LoginScreen from './screens/LoginScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AdminUserDetailsScreen from './screens/AdminUserDetailsScreen';
 
-import { loginUser, UserLoginRequest, UserLoginResponse } from './apis/AuthApi';
-import { getUserProfile, UserProfileResponse } from './apis/ProfileApi';
-import { getAdminUserDetails, AdminUserDetailsResponse } from './apis/AdminApi';
-
-import { AuthContext } from './contexts/AuthContext';
-import { UserContext } from './contexts/UserContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { UserProvider, useUser } from './contexts/UserContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
-  console.log('Rendering AuthStack...');
+  console.log('Rendering AuthStack'); // Log: Rendering AuthStack
 
   return (
     <Stack.Navigator>
@@ -31,7 +27,7 @@ const AuthStack = () => {
 };
 
 const AppStack = () => {
-  console.log('Rendering AppStack...');
+  console.log('Rendering AppStack'); // Log: Rendering AppStack
 
   return (
     <Tab.Navigator>
@@ -42,88 +38,43 @@ const AppStack = () => {
 };
 
 const App = () => {
-  console.log('Rendering App...');
+  console.log('Rendering App'); // Log: Rendering App
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<UserProfileResponse | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminUsers, setAdminUsers] = useState<UserProfileResponse[]>([]);
+  const { user, loading, handleLogin, handleLogout } = useAuth();
+  const { getUserProfile } = useUser();
 
   useEffect(() => {
-    const handleLogin = async (email: string, password: string) => {
-      try {
-        setIsLoading(true);
-        console.log('Logging in...');
-        const request: UserLoginRequest = { email, password };
-        const response: UserLoginResponse = await loginUser(request);
-        console.log('Login response:', response);
-        if (response.success) {
-          setIsLoggedIn(true);
-          console.log('User logged in successfully!');
-        } else {
-          console.log('Login failed:', response.message);
-        }
-      } catch (error) {
-        console.log('Error occurred during login:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    console.log('Fetching user profile...'); // Log: Fetching user profile...
 
-    const fetchUserProfile = async () => {
-      try {
-        setIsLoading(true);
-        console.log('Fetching user profile...');
+    if (user) {
+      getUserProfile(user.token);
+    }
+  }, [user, getUserProfile]);
 
-        const response: UserProfileResponse = await getUserProfile();
-        console.log('User profile fetched:', response);
-
-        setUser(response.user);
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    const fetchAdminUserDetails = async () => {
-      try {
-        setIsLoading(true);
-        console.log('Fetching admin user details...');
-
-        const response: AdminUserDetailsResponse = await getAdminUserDetails();
-        console.log('Admin user details fetched:', response);
-
-        setAdminUsers(response.users);
-      } catch (error) {
-        console.error('Error fetching admin user details:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserProfile();
-    fetchAdminUserDetails();
-  }, []);
+  const isLoggedIn = !!user;
+  const isAdmin = user?.isAdmin;
 
   return (
     <NavigationContainer>
-      <AuthContext.Provider value={{ isLoading, isLoggedIn, handleLogin }}>
-        <UserContext.Provider value={{ user, loading: isLoading, error: null }}>
-          {isLoggedIn ? (
-            isAdmin ? (
-              <AppStack />
-            ) : (
-              <ProfileScreen />
-            )
-          ) : (
-            <AuthStack />
-          )}
-        </UserContext.Provider>
-      </AuthContext.Provider>
+      {isLoggedIn ? (
+        isAdmin ? <AppStack /> : <ProfileScreen />
+      ) : (
+        <AuthStack />
+      )}
     </NavigationContainer>
   );
 };
 
-export default App;
+const AppWithProviders = () => {
+  console.log('Rendering AppWithProviders'); // Log: Rendering AppWithProviders
+
+  return (
+    <AuthProvider>
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </AuthProvider>
+  );
+};
+
+export default AppWithProviders;
