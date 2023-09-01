@@ -13,7 +13,8 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
-  console.log('Rendering AuthStack');
+  console.log('Rendering AuthStack'); // Log: Rendering AuthStack
+
   return (
     <Stack.Navigator>
       <Stack.Screen name="Registration" component={RegistrationScreen} options={{ headerShown: false }} />
@@ -23,7 +24,8 @@ const AuthStack = () => {
 };
 
 const AppStack = () => {
-  console.log('Rendering AppStack');
+  console.log('Rendering AppStack'); // Log: Rendering AppStack
+
   return (
     <Tab.Navigator>
       <Tab.Screen name="Profile" component={ProfileScreen} />
@@ -33,14 +35,19 @@ const AppStack = () => {
 };
 
 const AppNavigator = () => {
-  console.log('Rendering AppNavigator');
+  console.log('Rendering AppNavigator'); // Log: Rendering AppNavigator
+
   const isLoggedIn = false; // Check if the user is logged in
   const isAdmin = false; // Check if the user is an admin
 
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        isAdmin ? <AppStack /> : <ProfileScreen />
+        isAdmin ? (
+          <AppStack />
+        ) : (
+          <ProfileScreen />
+        )
       ) : (
         <AuthStack />
       )}
