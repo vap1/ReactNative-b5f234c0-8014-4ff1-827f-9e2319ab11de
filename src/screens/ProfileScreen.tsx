@@ -1,113 +1,90 @@
 
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
-import { getUserProfile, UserProfileRequest, UserProfileResponse } from '../apis/ProfileApi';
-import { updateUserProfile, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../apis/ProfileUpdateApi';
-import { useUserContext } from '../contexts/UserContext';
-import { User } from '../types/Types';
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, Button, Alert } from 'react-native';
+import { UserProfileRequest, UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
+import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
 
-const ProfileScreen = () => {
-  const { user, setUser } = useUserContext();
+const ProfileScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // Log: Fetching user profile
-      console.log('Fetching user profile');
-
-      // Prepare the request payload
-      const request: UserProfileRequest = {
-        token: user.token,
-      };
-
       try {
-        // Make the API call to get the user profile
+        console.log('Fetching user profile...');
+
+        const request: UserProfileRequest = {
+          token: 'YOUR_AUTH_TOKEN', // Replace with the actual auth token
+        };
+
         const response: UserProfileResponse = await getUserProfile(request);
 
-        // Log: User profile fetched successfully
-        console.log('User profile fetched successfully');
+        console.log('Response:', response);
 
-        // Update the user context with the fetched profile
-        setUser(response.user);
-
-        // Set the form fields with the fetched profile data
-        setName(response.user.name);
-        setContactInfo(response.user.contactInfo || '');
-        setAddress(response.user.address || '');
-        setProfilePicture(response.user.profilePicture || '');
+        if (response.user) {
+          setName(response.user.name);
+          setContactInfo(response.user.contactInfo || '');
+          setAddress(response.user.address || '');
+        } else {
+          Alert.alert('Error', 'Failed to fetch user profile');
+        }
       } catch (error) {
-        // Log: Error fetching user profile
         console.error('Error fetching user profile:', error);
-
-        // Display an error message to the user
-        alert('An error occurred while fetching the user profile');
+        Alert.alert('Error', 'Failed to fetch user profile');
       }
     };
 
     fetchUserProfile();
-  }, [user.token, setUser]);
+  }, []);
 
-  const handleSaveProfile = async () => {
-    // Log: Updating user profile
-    console.log('Updating user profile');
-
-    // Prepare the request payload
-    const request: UserProfileUpdateRequest = {
-      token: user.token,
-      name,
-      contactInfo,
-      address,
-      profilePicture,
-    };
-
+  const handleSaveChanges = async () => {
     try {
-      // Make the API call to update the user profile
+      console.log('Updating user profile...');
+      console.log('Name:', name);
+      console.log('Contact Info:', contactInfo);
+      console.log('Address:', address);
+
+      const request: UserProfileUpdateRequest = {
+        token: 'YOUR_AUTH_TOKEN', // Replace with the actual auth token
+        name,
+        contactInfo,
+        address,
+      };
+
       const response: UserProfileUpdateResponse = await updateUserProfile(request);
 
-      // Log: User profile updated successfully
-      console.log('User profile updated successfully');
+      console.log('Response:', response);
 
-      // Handle the response
       if (response.success) {
-        // Log: Profile update success message
-        console.log('Profile update success message:', response.message);
-
-        // Display a success message to the user
-        alert('Profile updated successfully');
+        Alert.alert('Success', 'User profile updated successfully');
       } else {
-        // Log: Profile update error message
-        console.log('Profile update error message:', response.message);
-
-        // Display an error message to the user
-        alert('Failed to update profile');
+        Alert.alert('Error', 'Failed to update user profile');
       }
     } catch (error) {
-      // Log: Profile update error
-      console.error('Profile update error:', error);
-
-      // Display an error message to the user
-      alert('An error occurred while updating the profile');
+      console.error('Error updating user profile:', error);
+      Alert.alert('Error', 'Failed to update user profile');
     }
   };
 
   return (
     <View>
-      <Text>Name:</Text>
-      <TextInput value={name} onChangeText={setName} />
-
-      <Text>Contact Info:</Text>
-      <TextInput value={contactInfo} onChangeText={setContactInfo} />
-
-      <Text>Address:</Text>
-      <TextInput value={address} onChangeText={setAddress} />
-
-      <Text>Profile Picture:</Text>
-      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
-
-      <Button title="Save" onPress={handleSaveProfile} />
+      <TextInput
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        placeholder="Contact Info"
+        value={contactInfo}
+        onChangeText={setContactInfo}
+      />
+      <TextInput
+        placeholder="Address"
+        value={address}
+        onChangeText={setAddress}
+      />
+      <Button title="Save Changes" onPress={handleSaveChanges} />
     </View>
   );
 };
