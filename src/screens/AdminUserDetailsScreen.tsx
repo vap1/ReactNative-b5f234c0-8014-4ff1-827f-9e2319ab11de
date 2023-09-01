@@ -1,26 +1,23 @@
 
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { UserContext } from '../contexts/UserContext';
-import { getUsers, UserContextProps } from '../apis/AdminApi';
+import { getUsers, User } from '../apis/AdminApi';
 
 const AdminUserDetailsScreen: React.FC = () => {
-  const { users, setUsers }: UserContextProps = useContext(UserContext);
+  const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getUsers();
-        console.log('API Response:', response);
+        console.log('Fetching users'); // Log: Fetching users
 
-        if (response.success) {
-          setUsers(response.users);
-          console.log('Users:', response.users);
-        } else {
-          console.log('Error:', response.message);
-        }
+        const response = await getUsers(); // Call the API to get the list of users
+
+        console.log('Users fetched successfully'); // Log: Users fetched successfully
+
+        setUsers(response.users); // Update the state with the fetched users
       } catch (error) {
-        console.log('Error:', error);
+        console.error('Error fetching users:', error); // Log: Error fetching users
       }
     };
 
@@ -29,8 +26,7 @@ const AdminUserDetailsScreen: React.FC = () => {
 
   return (
     <View>
-      <Text>Admin User Details</Text>
-      {/* Render the list of users */}
+      <Text>User List:</Text>
       {users.map((user) => (
         <View key={user.email}>
           <Text>Name: {user.name}</Text>
