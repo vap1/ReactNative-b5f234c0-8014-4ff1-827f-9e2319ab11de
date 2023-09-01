@@ -1,46 +1,34 @@
 
 import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 
-// Function to fetch user profile
-export const getUserProfile = async (): Promise<UserProfileResponse> => {
-  // Log: Fetching user profile
-  console.log('Fetching user profile');
-
-  // Simulate API call and generate random user profile data
-  const userProfile: UserProfileResponse = {
-    user: {
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      contactInfo: '1234567890',
-      address: '123 Main St',
-      profilePicture: 'https://example.com/profile.jpg',
-    },
+// Function to generate random user profile data
+const generateRandomUserProfile = (): UserProfileResponse => {
+  const user = {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    contactInfo: '1234567890',
+    address: '123 Main St',
+    profilePicture: 'https://example.com/profile.jpg',
   };
 
-  // Log: User profile fetched successfully
-  console.log('User profile fetched successfully');
-
-  return userProfile;
+  return { user };
 };
 
-// Function to update user profile
-export const updateUserProfile = async (): Promise<UserProfileResponse> => {
-  // Log: Updating user profile
-  console.log('Updating user profile');
+// Function to fetch user profile
+export const getUserProfile = async (): Promise<UserProfileResponse> => {
+  try {
+    console.log('Fetching user profile...');
 
-  // Simulate API call and generate random updated user profile data
-  const updatedUserProfile: UserProfileResponse = {
-    user: {
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      contactInfo: '9876543210',
-      address: '456 Elm St',
-      profilePicture: 'https://example.com/profile_updated.jpg',
-    },
-  };
+    // Simulating API call delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  // Log: User profile updated successfully
-  console.log('User profile updated successfully');
+    const userProfile = generateRandomUserProfile();
 
-  return updatedUserProfile;
+    console.log('User profile fetched:', userProfile);
+
+    return userProfile;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw new Error('Failed to fetch user profile');
+  }
 };
