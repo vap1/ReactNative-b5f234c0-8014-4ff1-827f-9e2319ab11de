@@ -1,52 +1,39 @@
 
 import React, { useState } from 'react';
-import { Text, TextInput, Button } from 'react-native';
+import { View, TextInput, Button, Alert } from 'react-native';
 import { UserLoginRequest, UserLoginResponse } from '../types/Types';
-import { loginUser } from '../apis/AuthApi';
+import loginUser from '../apis/AuthApi';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = async () => {
     try {
-      // Validate input
-      if (!email || !password) {
-        setErrorMessage('Please enter your email and password');
-        return;
-      }
-
-      // Create login request object
+      console.log('Logging in...');
       const request: UserLoginRequest = {
         email,
         password,
       };
 
-      // Make API call to login user
-      console.log('Making login API call...');
-      console.log('Request:', request);
       const response: UserLoginResponse = await loginUser(request);
-      console.log('Response:', response);
+      console.log('Login response:', response);
 
-      // Check login response
       if (response.success) {
-        // Login successful, perform necessary actions
+        // Handle successful login
         console.log('Login successful');
       } else {
-        // Login failed, display error message
-        setErrorMessage(response.message);
+        // Handle login failure
+        console.log('Login failed:', response.message);
       }
     } catch (error) {
-      console.error('Error logging in:', error);
-      setErrorMessage('An error occurred while logging in');
+      console.log('Error occurred during login:', error);
+      Alert.alert('Error', 'An error occurred during login. Please try again.');
     }
   };
 
   return (
-    <>
-      <Text>Login</Text>
-      {errorMessage ? <Text>{errorMessage}</Text> : null}
+    <View>
       <TextInput
         placeholder="Email"
         value={email}
@@ -59,7 +46,7 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
-    </>
+    </View>
   );
 };
 
