@@ -5,23 +5,19 @@ const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<Use
   // Log: Updating user profile
   console.log('Updating user profile');
 
-  try {
-    // Simulate API call and generate random data
-    const response: UserProfileUpdateResponse = {
-      success: true,
-      message: 'User profile updated successfully',
-    };
+  // Generate random data for demonstration purposes
+  const updatedProfile: UserProfileUpdateResponse = {
+    success: true,
+    message: 'User profile updated successfully',
+  };
 
-    // Log: User profile updated successfully
-    console.log('User profile updated successfully');
+  // Simulate API call delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    return response;
-  } catch (error) {
-    // Log: Error updating user profile
-    console.error('Error updating user profile:', error);
+  // Log: User profile updated successfully
+  console.log('User profile updated successfully');
 
-    throw error;
-  }
+  return updatedProfile;
 };
 
 export default updateUserProfile;
