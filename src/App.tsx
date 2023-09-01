@@ -39,26 +39,42 @@ const AppStack = () => {
 };
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Check if the user is logged in
-  const [isAdmin, setIsAdmin] = useState(false); // Check if the user is an admin
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log('Checking user login status'); // Log: Checking user login status
+    console.log('Checking login status'); // Log: Checking login status
 
-    // Perform login status check here (e.g., check if user is logged in and if they are an admin)
-    // Set the values of isLoggedIn and isAdmin accordingly
+    // Check if the user is already logged in
+    const checkLoggedInStatus = async () => {
+      try {
+        // Make an API call to check if the user is logged in
+        // Replace {} with the appropriate request parameters
+        const response = await loginUser({});
 
-    setIsLoggedIn(true); // Placeholder value for demonstration
-    setIsAdmin(false); // Placeholder value for demonstration
+        // Check the response and update the isLoggedIn state accordingly
+        if (response.success) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkLoggedInStatus();
   }, []);
 
-  useEffect(() => {
-    console.log('Rendering AppNavigator'); // Log: Rendering AppNavigator
-  }, []);
+  console.log('Rendering AppNavigator'); // Log: Rendering AppNavigator
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
+      {isLoading ? (
+        <LoadingScreen />
+      ) : isLoggedIn ? (
         isAdmin ? (
           <AppStack />
         ) : (
