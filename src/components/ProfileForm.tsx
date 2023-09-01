@@ -1,101 +1,72 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
-import { updateUserProfile } from '../apis/ProfileUpdateApi';
+import { updateUserProfile, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../apis/ProfileUpdateApi';
+import { User, UserProfileResponse } from '../types/Types';
 
-const ProfileForm: React.FC = () => {
+const ProfileForm = () => {
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
 
-  const [userProfile, setUserProfile] = useState<UserProfileResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const handleSaveProfile = async () => {
+    // Log: Updating user profile
+    console.log('Updating user profile');
 
-  useEffect(() => {
-    // Fetch user profile
-    const fetchUserProfile = async () => {
-      setIsLoading(true);
-      setIsError(false);
-
-      try {
-        // Simulate API call and generate random data
-        const userProfile: UserProfileResponse = {
-          user: {
-            name: 'John Doe',
-            email: 'johndoe@example.com',
-            contactInfo: '1234567890',
-            address: '123 Main St',
-            profilePicture: 'https://example.com/profile.jpg',
-          },
-        };
-
-        setUserProfile(userProfile);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-        setIsLoading(false);
-        setIsError(true);
-      }
+    // Prepare the request payload
+    const request: UserProfileUpdateRequest = {
+      name,
+      contactInfo,
+      address,
+      profilePicture,
     };
 
-    fetchUserProfile();
-  }, []);
-
-  const handleSaveChanges = async () => {
-    setIsLoading(true);
-    setIsError(false);
-
     try {
-      // Prepare request payload
-      const request: UserProfileUpdateRequest = {
-        token: 'your-auth-token',
-        name,
-        contactInfo,
-        address,
-        profilePicture,
-      };
-
-      // Update user profile
+      // Make the API call to update the user profile
       const response: UserProfileUpdateResponse = await updateUserProfile(request);
 
-      setSuccessMessage(response.message);
-      setIsLoading(false);
+      // Log: User profile updated successfully
+      console.log('User profile updated successfully');
+
+      // Handle the response
+      if (response.success) {
+        // Log: Profile update success message
+        console.log('Profile update success message:', response.message);
+
+        // Display a success message to the user
+        alert('Profile updated successfully');
+      } else {
+        // Log: Profile update error message
+        console.log('Profile update error message:', response.message);
+
+        // Display an error message to the user
+        alert('Failed to update profile');
+      }
     } catch (error) {
-      console.error('Error updating user profile:', error);
-      setIsLoading(false);
-      setIsError(true);
+      // Log: Profile update error
+      console.error('Profile update error:', error);
+
+      // Display an error message to the user
+      alert('An error occurred while updating the profile');
     }
   };
 
   return (
     <View>
-      {isLoading ? (
-        <Text>Loading...</Text>
-      ) : isError ? (
-        <Text>Error occurred while fetching user profile.</Text>
-      ) : (
-        <>
-          <Text>Name:</Text>
-          <TextInput value={name} onChangeText={setName} />
+      <Text>Name:</Text>
+      <TextInput value={name} onChangeText={setName} />
 
-          <Text>Contact Info:</Text>
-          <TextInput value={contactInfo} onChangeText={setContactInfo} />
+      <Text>Contact Info:</Text>
+      <TextInput value={contactInfo} onChangeText={setContactInfo} />
 
-          <Text>Address:</Text>
-          <TextInput value={address} onChangeText={setAddress} />
+      <Text>Address:</Text>
+      <TextInput value={address} onChangeText={setAddress} />
 
-          <Text>Profile Picture:</Text>
-          <TextInput value={profilePicture} onChangeText={setProfilePicture} />
+      <Text>Profile Picture:</Text>
+      <TextInput value={profilePicture} onChangeText={setProfilePicture} />
 
-          <Button title="Save Changes" onPress={handleSaveChanges} />
-
-          {successMessage && <Text>{successMessage}</Text>}
-        </>
-      )}
+      <Button title="Save" onPress={handleSaveProfile} />
     </View>
   );
 };
