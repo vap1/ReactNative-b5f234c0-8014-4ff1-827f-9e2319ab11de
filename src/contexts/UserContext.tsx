@@ -1,11 +1,11 @@
 
 import React, { createContext, useState, useEffect } from 'react';
-import { UserProfileResponse, UserProfileUpdateRequest } from '../types/Types';
+import { UserProfileResponse, UserProfileUpdateResponse } from '../types/Types';
 import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
 
 interface UserContextProps {
   userProfile: UserProfileResponse | null;
-  updateUserProfile: (request: UserProfileUpdateRequest) => void;
+  updateUserProfile: (data: UserProfileUpdateResponse) => void;
 }
 
 export const UserContext = createContext<UserContextProps>({
@@ -35,19 +35,21 @@ export const UserProvider: React.FC = ({ children }) => {
     fetchUserProfile();
   }, []);
 
-  const handleUpdateUserProfile = async (request: UserProfileUpdateRequest) => {
+  const handleUpdateUserProfile = (data: UserProfileUpdateResponse) => {
     // Log: Updating user profile
     console.log('Updating user profile');
 
-    try {
-      const response = await updateUserProfile(request);
-      setUserProfile(response);
-      // Log: User profile updated successfully
-      console.log('User profile updated successfully');
-    } catch (error) {
-      // Log: Error updating user profile
-      console.error('Error updating user profile:', error);
-    }
+    // Perform API call to update user profile
+    updateUserProfile(data)
+      .then((response) => {
+        // Log: User profile updated successfully
+        console.log('User profile updated successfully');
+        setUserProfile(response);
+      })
+      .catch((error) => {
+        // Log: Error updating user profile
+        console.error('Error updating user profile:', error);
+      });
   };
 
   return (
