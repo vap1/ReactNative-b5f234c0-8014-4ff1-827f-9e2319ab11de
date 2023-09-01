@@ -28,14 +28,13 @@ export const UserProvider: React.FC = ({ children }) => {
         console.log('Fetching user profile...');
 
         const response = await getUserProfile();
-        console.log('User profile fetched:', response);
-
         setUser(response.user);
         setLoading(false);
+        console.log('User profile fetched successfully:', response);
       } catch (error) {
-        console.error('Error fetching user profile:', error);
         setError('Failed to fetch user profile');
         setLoading(false);
+        console.error('Error fetching user profile:', error);
       }
     };
 
