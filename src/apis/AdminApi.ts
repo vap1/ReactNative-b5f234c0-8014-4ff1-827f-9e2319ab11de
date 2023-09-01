@@ -2,40 +2,42 @@
 import { AdminUserDetailsRequest, AdminUserDetailsResponse, User } from '../types/Types';
 
 // Function to generate random user data
-const generateRandomUserData = (): User => {
-  const randomName = 'User ' + Math.floor(Math.random() * 100);
-  const randomEmail = 'user' + Math.floor(Math.random() * 100) + '@example.com';
-  const randomContactInfo = 'Contact Info ' + Math.floor(Math.random() * 100);
-  const randomAddress = 'Address ' + Math.floor(Math.random() * 100);
-  const randomProfilePicture = 'https://example.com/profile-picture-' + Math.floor(Math.random() * 100) + '.jpg';
+const generateRandomUserData = (): User[] => {
+  const users: User[] = [];
 
-  return {
-    name: randomName,
-    email: randomEmail,
-    contactInfo: randomContactInfo,
-    address: randomAddress,
-    profilePicture: randomProfilePicture,
-  };
+  for (let i = 1; i <= 10; i++) {
+    const user: User = {
+      name: `User ${i}`,
+      email: `user${i}@example.com`,
+      contactInfo: `Contact Info ${i}`,
+      address: `Address ${i}`,
+      profilePicture: `https://example.com/profiles/user${i}.jpg`,
+    };
+
+    users.push(user);
+  }
+
+  return users;
 };
 
-// Function to get admin user details
-const getAdminUserDetails = (request: AdminUserDetailsRequest): AdminUserDetailsResponse => {
-  console.log('Fetching admin user details...');
-  // Simulating API call delay
-  setTimeout(() => {
-    console.log('Admin user details fetched successfully!');
-    const users: User[] = [];
+export const getAdminUserDetails = (request: AdminUserDetailsRequest): AdminUserDetailsResponse => {
+  // Log: Fetching admin user details
+  console.log('Fetching admin user details');
+
+  try {
     // Generate random user data
-    for (let i = 0; i < 10; i++) {
-      const user = generateRandomUserData();
-      users.push(user);
-    }
-    const response: AdminUserDetailsResponse = {
+    const users = generateRandomUserData();
+
+    // Log: Admin user details fetched successfully
+    console.log('Admin user details fetched successfully');
+
+    return {
       users,
     };
-    console.log('Response:', response);
-    return response;
-  }, 1000);
-};
+  } catch (error) {
+    // Log: Error fetching admin user details
+    console.error('Error fetching admin user details:', error);
 
-export default getAdminUserDetails;
+    throw new Error('Failed to fetch admin user details');
+  }
+};
