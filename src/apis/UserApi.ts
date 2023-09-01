@@ -1,25 +1,30 @@
 
 import { UserRegistrationRequest, UserRegistrationResponse } from '../types/Types';
 
+// Function to simulate the user registration API call
 export const registerUser = async (request: UserRegistrationRequest): Promise<UserRegistrationResponse> => {
   try {
-    // Log: Sending user registration request to the server
-    console.log('Sending user registration request:', request);
+    // Log the registration request
+    console.log('User Registration Request:', request);
 
-    // Simulating API call and generating random data
+    // Simulate API call and generate a random response
     const response: UserRegistrationResponse = {
       success: true,
       message: 'User registration successful',
     };
 
-    // Log: User registration successful
-    console.log('User registration successful:', response);
+    // Log the registration response
+    console.log('User Registration Response:', response);
 
     return response;
   } catch (error) {
-    // Log: User registration failed
-    console.error('User registration failed:', error);
+    // Log any errors that occur during the API call
+    console.error('Error registering user:', error);
 
-    throw error;
+    // Return an error response
+    return {
+      success: false,
+      message: 'Error registering user',
+    };
   }
 };
