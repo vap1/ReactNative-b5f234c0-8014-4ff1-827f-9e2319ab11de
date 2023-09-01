@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { getAdminUserDetails, User, AdminUserDetailsResponse } from '../apis/AdminApi';
+import { getAdminUserDetails, AdminUserDetailsResponse, User } from '../apis/AdminApi';
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -9,13 +9,20 @@ const UserList: React.FC = () => {
   useEffect(() => {
     const fetchAdminUserDetails = async () => {
       try {
+        // Log: UserList - fetchAdminUserDetails - Fetching admin user details
         console.log('Fetching admin user details...');
+
+        // Call the API to get admin user details
         const response: AdminUserDetailsResponse = await getAdminUserDetails();
-        console.log('Admin user details fetched:', response.users);
+
+        // Log: UserList - fetchAdminUserDetails - Admin user details fetched successfully
+        console.log('Admin user details fetched successfully:', response.users);
+
+        // Update the state with the fetched user details
         setUsers(response.users);
       } catch (error) {
+        // Log: UserList - fetchAdminUserDetails - Error fetching admin user details
         console.error('Error fetching admin user details:', error);
-        // Handle error
       }
     };
 
