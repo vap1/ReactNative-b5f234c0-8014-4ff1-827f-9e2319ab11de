@@ -11,20 +11,19 @@ const generateRandomUserProfile = (): UserProfileResponse => {
     profilePicture: 'https://example.com/profile.jpg',
   };
 
+  console.log('Fetching user profile...');
+  console.log('User profile fetched successfully:', user);
+
   return { user };
 };
 
 // Function to fetch user profile
 export const getUserProfile = async (): Promise<UserProfileResponse> => {
   try {
-    console.log('Fetching user profile...');
-
     // Simulating API call delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const userProfile = generateRandomUserProfile();
-
-    console.log('User profile fetched:', userProfile);
 
     return userProfile;
   } catch (error) {
