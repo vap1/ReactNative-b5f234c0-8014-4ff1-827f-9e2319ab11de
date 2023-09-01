@@ -2,22 +2,22 @@
 import { UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
 
 const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
-  // Log: Updating user profile
-  console.log('Updating user profile');
+  try {
+    console.log('Updating user profile...');
+    console.log('Request:', request);
 
-  // Generate random data for demonstration purposes
-  const updatedProfile: UserProfileUpdateResponse = {
-    success: true,
-    message: 'User profile updated successfully',
-  };
+    // Generate random data for the response
+    const response: UserProfileUpdateResponse = {
+      success: true,
+      message: 'User profile updated successfully',
+    };
 
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Log: User profile updated successfully
-  console.log('User profile updated successfully');
-
-  return updatedProfile;
+    console.log('Response:', response);
+    return response;
+  } catch (error) {
+    console.error('Error updating user profile:', error);
+    throw new Error('Failed to update user profile');
+  }
 };
 
 export default updateUserProfile;
