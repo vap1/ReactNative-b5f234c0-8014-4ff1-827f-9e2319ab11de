@@ -7,48 +7,50 @@ import { useAuthContext } from '../contexts/AuthContext';
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setToken } = useAuthContext();
+  const { setAuthToken } = useAuthContext();
 
   const handleLogin = async () => {
-    console.log('Login form submitted');
     try {
+      // Log: Sending login request to the server
+      console.log('Sending login request to the server');
+
       const request: UserLoginRequest = {
         email,
         password,
       };
 
-      console.log('Sending login request:', request);
+      // Call the loginUser API function
       const response: UserLoginResponse = await loginUser(request);
-      console.log('Received login response:', response);
 
       if (response.success) {
-        setToken(response.token);
-        console.log('User logged in successfully');
+        // Log: Login successful
+        console.log('Login successful');
+
+        // Set the auth token in the context
+        setAuthToken(response.token);
       } else {
+        // Log: Login failed
         console.log('Login failed:', response.message);
       }
     } catch (error) {
-      console.log('Error occurred during login:', error);
+      // Log: Login failed
+      console.error('Login failed:', error);
     }
   };
 
   return (
     <View>
-      <Text>Email:</Text>
       <TextInput
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter your email"
       />
-
-      <Text>Password:</Text>
       <TextInput
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        placeholder="Enter your password"
         secureTextEntry
       />
-
       <Button title="Login" onPress={handleLogin} />
     </View>
   );
