@@ -4,20 +4,17 @@ import { UserLoginRequest, UserLoginResponse } from '../types/Types';
 // Function to simulate the login API call
 const loginUser = async (request: UserLoginRequest): Promise<UserLoginResponse> => {
   try {
-    console.log('Making login API call...');
-    console.log('Request:', request);
-
+    console.log('Logging in...');
     // Simulate API call and generate random data
     const response: UserLoginResponse = {
       success: true,
       message: 'Login successful',
-      token: 'random_token',
+      token: 'randomToken123'
     };
-
-    console.log('Response:', response);
+    console.log('Login response:', response);
     return response;
   } catch (error) {
-    console.error('Error logging in:', error);
+    console.log('Error occurred during login:', error);
     throw error;
   }
 };
