@@ -1,34 +1,45 @@
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
-import { UserLoginRequest } from '../types/Types';
-import loginUser from '../apis/AuthApi';
+import { View, TextInput, Button } from 'react-native';
+import loginUser, { UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
     try {
-      console.log('Logging in...');
-      const request: UserLoginRequest = {
+      setLoading(true);
+      setError('');
+
+      // Log: LoginForm - handleLogin - Sending login request
+      console.log('Sending login request:', { email, password });
+
+      const loginData: UserLoginRequest = {
         email,
         password,
       };
 
-      const response = await loginUser(request);
-      console.log('Login response:', response);
+      // Call the loginUser API function
+      const response: UserLoginResponse = await loginUser(loginData);
+
+      // Log: LoginForm - handleLogin - Login response received
+      console.log('Login response received:', response);
 
       if (response.success) {
         // Handle successful login
-        console.log('Login successful');
       } else {
-        // Handle login failure
-        console.log('Login failed:', response.message);
+        setError(response.message);
       }
     } catch (error) {
-      console.log('Error occurred during login:', error);
-      Alert.alert('Error', 'An error occurred during login. Please try again.');
+      // Log: LoginForm - handleLogin - Error occurred during login
+      console.error('Error occurred during login:', error);
+
+      setError('An error occurred during login.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,7 +56,12 @@ const LoginForm = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button
+        title={loading ? 'Logging in...' : 'Login'}
+        onPress={handleLogin}
+        disabled={loading}
+      />
+      {error ? <Text>{error}</Text> : null}
     </View>
   );
 };
