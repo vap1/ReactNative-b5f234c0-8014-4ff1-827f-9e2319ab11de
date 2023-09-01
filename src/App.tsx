@@ -9,13 +9,18 @@ import LoginScreen from './screens/LoginScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AdminUserDetailsScreen from './screens/AdminUserDetailsScreen';
 
+import { loginUser, UserLoginRequest, UserLoginResponse } from './apis/AuthApi';
+import { getUserProfile, UserProfileResponse } from './apis/ProfileApi';
+import { getAdminUserDetails, AdminUserDetailsResponse } from './apis/AdminApi';
+
+import { AuthContext } from './contexts/AuthContext';
+import { UserContext } from './contexts/UserContext';
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => {
-  useEffect(() => {
-    console.log('Rendering AuthStack'); // Log: Rendering AuthStack
-  }, []);
+  console.log('Rendering AuthStack...');
 
   return (
     <Stack.Navigator>
@@ -26,9 +31,7 @@ const AuthStack = () => {
 };
 
 const AppStack = () => {
-  useEffect(() => {
-    console.log('Rendering AppStack'); // Log: Rendering AppStack
-  }, []);
+  console.log('Rendering AppStack...');
 
   return (
     <Tab.Navigator>
@@ -39,50 +42,86 @@ const AppStack = () => {
 };
 
 const App = () => {
+  console.log('Rendering App...');
+
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<UserProfileResponse | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminUsers, setAdminUsers] = useState<UserProfileResponse[]>([]);
 
   useEffect(() => {
-    console.log('Checking login status'); // Log: Checking login status
-
-    // Check if the user is already logged in
-    const checkLoggedInStatus = async () => {
+    const handleLogin = async (email: string, password: string) => {
       try {
-        // Make an API call to check if the user is logged in
-        // Replace {} with the appropriate request parameters
-        const response = await loginUser({});
-
-        // Check the response and update the isLoggedIn state accordingly
+        setIsLoading(true);
+        console.log('Logging in...');
+        const request: UserLoginRequest = { email, password };
+        const response: UserLoginResponse = await loginUser(request);
+        console.log('Login response:', response);
         if (response.success) {
           setIsLoggedIn(true);
+          console.log('User logged in successfully!');
         } else {
-          setIsLoggedIn(false);
+          console.log('Login failed:', response.message);
         }
       } catch (error) {
-        console.error('Error checking login status:', error);
+        console.log('Error occurred during login:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkLoggedInStatus();
-  }, []);
+    const fetchUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Fetching user profile...');
 
-  console.log('Rendering AppNavigator'); // Log: Rendering AppNavigator
+        const response: UserProfileResponse = await getUserProfile();
+        console.log('User profile fetched:', response);
+
+        setUser(response.user);
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const fetchAdminUserDetails = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Fetching admin user details...');
+
+        const response: AdminUserDetailsResponse = await getAdminUserDetails();
+        console.log('Admin user details fetched:', response);
+
+        setAdminUsers(response.users);
+      } catch (error) {
+        console.error('Error fetching admin user details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+    fetchAdminUserDetails();
+  }, []);
 
   return (
     <NavigationContainer>
-      {isLoading ? (
-        <LoadingScreen />
-      ) : isLoggedIn ? (
-        isAdmin ? (
-          <AppStack />
-        ) : (
-          <ProfileScreen />
-        )
-      ) : (
-        <AuthStack />
-      )}
+      <AuthContext.Provider value={{ isLoading, isLoggedIn, handleLogin }}>
+        <UserContext.Provider value={{ user, loading: isLoading, error: null }}>
+          {isLoggedIn ? (
+            isAdmin ? (
+              <AppStack />
+            ) : (
+              <ProfileScreen />
+            )
+          ) : (
+            <AuthStack />
+          )}
+        </UserContext.Provider>
+      </AuthContext.Provider>
     </NavigationContainer>
   );
 };
