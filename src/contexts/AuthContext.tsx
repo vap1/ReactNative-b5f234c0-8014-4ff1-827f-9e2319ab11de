@@ -3,54 +3,65 @@ import React, { createContext, useState, useEffect } from 'react';
 import { loginUser, UserLoginRequest, UserLoginResponse } from '../apis/AuthApi';
 import { AuthContextProps } from '../types/Types';
 
-export const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  login: () => {},
-  logout: () => {},
-});
+export const AuthContext = createContext<AuthContextProps>({});
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [user, setUser] = useState<UserLoginResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Log: Fetching user data from local storage
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      // Log: User data found in local storage
-      setUser(JSON.parse(userData));
-    }
-    setLoading(false);
+    // Check if the user is already logged in
+    const checkLoggedInStatus = async () => {
+      try {
+        // Make an API call to check if the user is logged in
+        const response = await loginUser({}); // Replace {} with the appropriate request parameters
+
+        // Check the response and update the isLoggedIn state accordingly
+        if (response.success) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('Error checking login status:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkLoggedInStatus();
   }, []);
 
-  const login = async (request: UserLoginRequest) => {
+  const handleLogin = async (loginData: UserLoginRequest) => {
     try {
-      // Log: Sending login request to the server
-      const response = await loginUser(request);
-      // Log: Login successful
-      setUser(response);
-      // Log: Saving user data to local storage
-      localStorage.setItem('user', JSON.stringify(response));
+      // Make an API call to log in the user
+      const response: UserLoginResponse = await loginUser(loginData);
+
+      // Check the response and update the isLoggedIn state accordingly
+      if (response.success) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
     } catch (error) {
-      // Log: Login failed
-      console.error('Login failed:', error);
+      console.error('Error logging in:', error);
     }
   };
 
-  const logout = () => {
-    // Log: Clearing user data from local storage
-    localStorage.removeItem('user');
-    // Log: User logged out
-    setUser(null);
+  const handleLogout = () => {
+    // Perform any necessary cleanup or API calls to log out the user
+    setIsLoggedIn(false);
   };
 
-  if (loading) {
-    // Log: Loading state
-    return <div>Loading...</div>;
-  }
-
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        isLoading,
+        handleLogin,
+        handleLogout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
