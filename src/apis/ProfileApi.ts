@@ -1,12 +1,12 @@
 
-import { UserProfileRequest, UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
+import { UserProfileRequest, UserProfileResponse } from '../types/Types';
 
 // Function to fetch user profile
-export const getUserProfile = async (request: UserProfileRequest): Promise<UserProfileResponse> => {
+export const getUserProfile = async (): Promise<UserProfileResponse> => {
   // Log: Fetching user profile
   console.log('Fetching user profile');
 
-  // Simulating API call and generating random data
+  // Simulate API call and generate random user profile data
   const userProfile: UserProfileResponse = {
     user: {
       name: 'John Doe',
@@ -24,18 +24,23 @@ export const getUserProfile = async (request: UserProfileRequest): Promise<UserP
 };
 
 // Function to update user profile
-export const updateUserProfile = async (request: UserProfileUpdateRequest): Promise<UserProfileUpdateResponse> => {
+export const updateUserProfile = async (): Promise<UserProfileResponse> => {
   // Log: Updating user profile
   console.log('Updating user profile');
 
-  // Simulating API call and generating random data
-  const response: UserProfileUpdateResponse = {
-    success: true,
-    message: 'User profile updated successfully',
+  // Simulate API call and generate random updated user profile data
+  const updatedUserProfile: UserProfileResponse = {
+    user: {
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      contactInfo: '9876543210',
+      address: '456 Elm St',
+      profilePicture: 'https://example.com/profile_updated.jpg',
+    },
   };
 
   // Log: User profile updated successfully
   console.log('User profile updated successfully');
 
-  return response;
+  return updatedUserProfile;
 };
