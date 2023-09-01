@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Alert } from 'react-native';
+import { View, TextInput, Button } from 'react-native';
 import { UserProfileRequest, UserProfileResponse, UserProfileUpdateRequest, UserProfileUpdateResponse } from '../types/Types';
 import { getUserProfile, updateUserProfile } from '../apis/ProfileApi';
 
@@ -8,6 +8,7 @@ const ProfileScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
   const [address, setAddress] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -22,23 +23,20 @@ const ProfileScreen: React.FC = () => {
 
         console.log('Response:', response);
 
-        if (response.user) {
-          setName(response.user.name);
-          setContactInfo(response.user.contactInfo || '');
-          setAddress(response.user.address || '');
-        } else {
-          Alert.alert('Error', 'Failed to fetch user profile');
-        }
+        // Update the state with the fetched user profile
+        setName(response.user.name);
+        setContactInfo(response.user.contactInfo || '');
+        setAddress(response.user.address || '');
       } catch (error) {
         console.error('Error fetching user profile:', error);
-        Alert.alert('Error', 'Failed to fetch user profile');
+        console.log('Failed to fetch user profile');
       }
     };
 
     fetchUserProfile();
   }, []);
 
-  const handleSaveChanges = async () => {
+  const handleSave = async () => {
     try {
       console.log('Updating user profile...');
       console.log('Name:', name);
@@ -56,14 +54,15 @@ const ProfileScreen: React.FC = () => {
 
       console.log('Response:', response);
 
+      // Handle success or failure based on the response
       if (response.success) {
-        Alert.alert('Success', 'User profile updated successfully');
+        console.log('User profile updated successfully');
       } else {
-        Alert.alert('Error', 'Failed to update user profile');
+        console.log('Failed to update user profile:', response.message);
       }
     } catch (error) {
       console.error('Error updating user profile:', error);
-      Alert.alert('Error', 'Failed to update user profile');
+      console.log('Failed to update user profile');
     }
   };
 
@@ -84,7 +83,7 @@ const ProfileScreen: React.FC = () => {
         value={address}
         onChangeText={setAddress}
       />
-      <Button title="Save Changes" onPress={handleSaveChanges} />
+      <Button title="Save" onPress={handleSave} disabled={loading} />
     </View>
   );
 };
